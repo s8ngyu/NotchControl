@@ -1,0 +1,9 @@
+Package: notchcontrol
+Name: NotchControl
+Depends: mobilesubstrate
+Version: 0.0.1
+Architecture: iphoneos-arm
+Description: An awesome MobileSubstrate tweak!
+Maintainer: PeterDev & Easy-Z
+Author: PeterDev & Easy-Z
+Section: Tweaks
