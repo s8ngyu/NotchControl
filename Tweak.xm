@@ -1,3 +1,4 @@
+#import "MarqueeLabel.h"
 #import "MediaRemote.h"
 
 UIView *gestureView;
