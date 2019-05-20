@@ -7,7 +7,7 @@ UIScrollView *scrollView;
 	%orig;
 
 	if (!gestureView) {
-		gestureView = [[UIView alloc] initWithFrame:CGRectMake(83, -30, 209, 70)]; //Size for iPX, IPXS
+		gestureView = [[UIView alloc] initWithFrame:CGRectMake(83, -30, 209, 65)]; //Size for iPX, IPXS
 		gestureView.backgroundColor = [UIColor clearColor];
 		gestureView.clipsToBounds = YES;
 		gestureView.layer.cornerRadius = 23;
