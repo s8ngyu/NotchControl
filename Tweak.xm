@@ -1,5 +1,6 @@
 UIView *gestureView;
 UIView *notchView;
+UIScrollView *scrollView;
 
 %hook UIWindow
 -(void)layoutSubviews {
@@ -27,6 +28,14 @@ UIView *notchView;
     	upGestureRecognizer.direction = UISwipeGestureRecognizerDirectionUp;
     	upGestureRecognizer.numberOfTouchesRequired = 1;
     	[notchView addGestureRecognizer:upGestureRecognizer];
+
+		scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0, 60, notchView.frame.size.width, 60)];
+		scrollView.backgroundColor = [UIColor blackColor];
+		scrollView.pagingEnabled = YES;
+		[notchView addSubview:scrollView];
+
+		[scrollView setContentSize:CGSizeMake(notchView.frame.size.width * 3, 60)];
+
 	}
 }
 
