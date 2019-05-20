@@ -2,6 +2,8 @@ ARCHS = arm64 arm64e
 
 include $(THEOS)/makefiles/common.mk
 
+ADDITIONAL_OBJCFLAGS = -fobjc-arc
+
 TWEAK_NAME = NotchControl
 NotchControl_FILES = Tweak.xm
 
