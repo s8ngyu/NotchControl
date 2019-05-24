@@ -19,6 +19,10 @@ UIImageView *musicBackView;
 UIImageView *musicPlayView;
 UIImageView *musicNextView;
 
+//Essenstials
+UIView *clockView;
+UILabel *clockLabel;
+
 __attribute__((unused)) static UIImage* UIKitImage(NSString* imgName)
 {
     NSString* artworkPath = @"/System/Library/PrivateFrameworks/UIKitCore.framework/Artwork.bundle";
@@ -42,6 +46,7 @@ __attribute__((unused)) static UIImage* UIKitImage(NSString* imgName)
 	if (!gestureView) {
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateInfo) name:(__bridge NSString*)kMRMediaRemoteNowPlayingInfoDidChangeNotification object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateButton) name:(__bridge NSString*)kMRMediaRemoteNowPlayingApplicationIsPlayingDidChangeNotification object:nil];
+		[NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(updateTime) userInfo:nil repeats:YES];
 
 		gestureView = [[UIView alloc] initWithFrame:CGRectMake(83, -30, 209, 65)]; //Size for iPX, IPXS
 		gestureView.backgroundColor = [UIColor clearColor];
@@ -70,7 +75,7 @@ __attribute__((unused)) static UIImage* UIKitImage(NSString* imgName)
 		scrollView.pagingEnabled = YES;
 		[notchView addSubview:scrollView];
 
-		[scrollView setContentSize:CGSizeMake(notchView.frame.size.width * 2, 60)];
+		[scrollView setContentSize:CGSizeMake(notchView.frame.size.width * 3, 60)];
 
 		//Music Preview View Start
 		musicPreviewView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, scrollView.frame.size.width, scrollView.frame.size.height)];
@@ -124,6 +129,25 @@ __attribute__((unused)) static UIImage* UIKitImage(NSString* imgName)
 		UITapGestureRecognizer *musicNextTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(musicNextTap:)];
 		musicNextTap.numberOfTapsRequired = 1;
 		[musicNextView addGestureRecognizer:musicNextTap];
+		//Music Control End
+
+		//Essenstials Start
+		clockView = [[UIView alloc] initWithFrame:CGRectMake(scrollView.frame.size.width * 2, 0, scrollView.frame.size.width, scrollView.frame.size.height)];
+		clockView.backgroundColor = [UIColor blackColor];
+		[scrollView addSubview:clockView];
+
+		NSDate *curDate = [NSDate date];
+		NSDateFormatter *dateFormatter = [[NSDateFormatter alloc]init];
+		[dateFormatter setDateFormat:@"HH:mm"];
+		NSString *dateString = [dateFormatter stringFromDate:curDate];
+
+		clockLabel = [[UILabel alloc] initWithFrame:CGRectMake(54.5, 15, 100, 30)];
+		clockLabel.font = [UIFont fontWithName:@".SFUIText" size:30];
+		clockLabel.text = dateString;
+		clockLabel.textColor = [UIColor whiteColor];
+		clockLabel.textAlignment = NSTextAlignmentCenter;
+		[clockView addSubview:clockLabel];
+		//Essenstials End
 	}
 }
 
@@ -194,5 +218,15 @@ __attribute__((unused)) static UIImage* UIKitImage(NSString* imgName)
             musicPlayView.image = UIKitImage(@"UIButtonBarPlay");
         }
     });
+}
+
+%new
+-(void)updateTime {
+	NSDate *curDate = [NSDate date];
+	NSDateFormatter *dateFormatter = [[NSDateFormatter alloc]init];
+	[dateFormatter setDateFormat:@"hh:mm"];
+	NSString *dateString = [dateFormatter stringFromDate:curDate];
+	
+	clockLabel.text = dateString;
 }
 %end
