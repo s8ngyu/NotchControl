@@ -1,4 +1,4 @@
-Package: notchcontrol
+Package: com.peterdev.notchcontrol
 Name: NotchControl
 Depends: mobilesubstrate
 Version: 0.0.1
