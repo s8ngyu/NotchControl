@@ -5,7 +5,7 @@ include $(THEOS)/makefiles/common.mk
 ADDITIONAL_OBJCFLAGS = -fobjc-arc
 
 TWEAK_NAME = NotchControl
-NotchControl_FILES = Tweak.xm MarqueeLabel.m
+NotchControl_FILES = Tweak.xm ./headers/MarqueeLabel.m ./headers/UIImage+tintColor.m ./headers/UIImage+ScaledImage.m
 NotchControl_FRAMEWORKS += UIKit QuartzCore
 NotchControl_PRIVATE_FRAMEWORKS = MediaRemote
 

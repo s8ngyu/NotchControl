@@ -1,15 +1,39 @@
-#import "MarqueeLabel.h"
-#import "MediaRemote.h"
+#import "./headers/MarqueeLabel.h"
+#import "./headers/MediaRemote.h"
+#import "./headers/UIImage+tintColor.h"
+#import "./headers/UIImage+ScaledImage.h"
 
 UIView *gestureView;
 UIView *notchView;
 UIScrollView *scrollView;
-UIView *musicPreviewView;
 
 //Music Preview View
+UIView *musicPreviewView;
 UIImageView *artWorkView;
 MarqueeLabel *musicTitleLabel;
 MarqueeLabel *musicArtistLabel;
+
+//Muisc Control View
+UIView *musicControlView;
+UIImageView *musicBackView;
+UIImageView *musicPlayView;
+UIImageView *musicNextView;
+
+__attribute__((unused)) static UIImage* UIKitImage(NSString* imgName)
+{
+    NSString* artworkPath = @"/System/Library/PrivateFrameworks/UIKitCore.framework/Artwork.bundle";
+    NSBundle* artworkBundle = [NSBundle bundleWithPath:artworkPath];
+    if (!artworkBundle)
+    {
+        artworkPath = @"/System/Library/Frameworks/UIKit.framework/Artwork.bundle";
+        artworkBundle = [NSBundle bundleWithPath:artworkPath];
+    }
+    UIImage* barsImg = [UIImage imageNamed:imgName inBundle:artworkBundle compatibleWithTraitCollection:nil];
+	barsImg = [barsImg imageWithTintedColor:[UIColor whiteColor]];
+	barsImg = [barsImg scaleImageToSize:CGSizeMake(20, 20)];
+
+    return barsImg;
+}
 
 %hook UIWindow
 -(void)layoutSubviews {
@@ -17,6 +41,7 @@ MarqueeLabel *musicArtistLabel;
 
 	if (!gestureView) {
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateInfo) name:(__bridge NSString*)kMRMediaRemoteNowPlayingInfoDidChangeNotification object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateButton) name:(__bridge NSString*)kMRMediaRemoteNowPlayingApplicationIsPlayingDidChangeNotification object:nil];
 
 		gestureView = [[UIView alloc] initWithFrame:CGRectMake(83, -30, 209, 65)]; //Size for iPX, IPXS
 		gestureView.backgroundColor = [UIColor clearColor];
@@ -45,8 +70,9 @@ MarqueeLabel *musicArtistLabel;
 		scrollView.pagingEnabled = YES;
 		[notchView addSubview:scrollView];
 
-		[scrollView setContentSize:CGSizeMake(notchView.frame.size.width * 3, 60)];
+		[scrollView setContentSize:CGSizeMake(notchView.frame.size.width * 2, 60)];
 
+		//Music Preview View Start
 		musicPreviewView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, scrollView.frame.size.width, scrollView.frame.size.height)];
 		musicPreviewView.backgroundColor = [UIColor blackColor];
 		[scrollView addSubview:musicPreviewView];
@@ -66,6 +92,38 @@ MarqueeLabel *musicArtistLabel;
 		musicArtistLabel.font = [UIFont fontWithName:@".SFUIText" size:15];
 		musicArtistLabel.textColor = [UIColor whiteColor];
 		[musicPreviewView addSubview:musicArtistLabel];
+		//Music Preview View End
+
+		//Music Control Start
+		musicControlView = [[UIView alloc] initWithFrame:CGRectMake(scrollView.frame.size.width, 0, scrollView.frame.size.width, scrollView.frame.size.height)];
+		musicControlView.backgroundColor = [UIColor blackColor];
+		[scrollView addSubview:musicControlView];
+
+		musicBackView = [[UIImageView alloc] initWithFrame:CGRectMake(15, 20, 20, 20)];
+		musicBackView.backgroundColor = [UIColor clearColor];
+		musicBackView.image = UIKitImage(@"UIButtonBarRewind");
+		musicBackView.userInteractionEnabled = YES;
+		[musicControlView addSubview:musicBackView];
+		UITapGestureRecognizer *musicBackTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(musicBackTap:)];
+		musicBackTap.numberOfTapsRequired = 1;
+		[musicBackView addGestureRecognizer:musicBackTap];
+
+		musicPlayView = [[UIImageView alloc] initWithFrame:CGRectMake(94.5, 20, 20, 20)];
+		musicPlayView.backgroundColor = [UIColor clearColor];
+		musicPlayView.userInteractionEnabled = YES;
+		[musicControlView addSubview:musicPlayView];
+		UITapGestureRecognizer *musicPlayTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(musicPlayTap:)];
+		musicPlayTap.numberOfTapsRequired = 1;
+		[musicPlayView addGestureRecognizer:musicPlayTap];
+
+		musicNextView = [[UIImageView alloc] initWithFrame:CGRectMake(174, 20, 20, 20)];
+		musicNextView.backgroundColor = [UIColor clearColor];
+		musicNextView.image = UIKitImage(@"UIButtonBarFastForward");
+		musicNextView.userInteractionEnabled = YES;
+		[musicControlView addSubview:musicNextView];
+		UITapGestureRecognizer *musicNextTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(musicNextTap:)];
+		musicNextTap.numberOfTapsRequired = 1;
+		[musicNextView addGestureRecognizer:musicNextTap];
 	}
 }
 
@@ -83,6 +141,21 @@ MarqueeLabel *musicArtistLabel;
 	[UIView setAnimationDuration:0.5];
 	notchView.frame = CGRectMake(83, -120, 209, 120);
 	[UIView commitAnimations];
+}
+
+%new
+-(void)musicBackTap:(UITapGestureRecognizer *)gesture {
+	MRMediaRemoteSendCommand(kMRPreviousTrack, nil);
+}
+
+%new
+-(void)musicPlayTap:(UITapGestureRecognizer *)gesture {
+	MRMediaRemoteSendCommand(kMRTogglePlayPause, nil);
+}
+
+%new
+-(void)musicNextTap:(UITapGestureRecognizer *)gesture {
+	MRMediaRemoteSendCommand(kMRNextTrack, nil);
 }
 
 %new
@@ -108,5 +181,18 @@ MarqueeLabel *musicArtistLabel;
 			musicArtistLabel.text = [dict objectForKey:(__bridge NSString *)kMRMediaRemoteNowPlayingInfoArtist];
 		}
 	});
+}
+
+%new
+-(void)updateButton {
+	MRMediaRemoteGetNowPlayingApplicationIsPlaying(dispatch_get_main_queue(), ^(Boolean isPlaying) {
+        if (isPlaying) {
+            //playing
+			musicPlayView.image = UIKitImage(@"UIButtonBarPause");
+        } else {
+            //paused
+            musicPlayView.image = UIKitImage(@"UIButtonBarPlay");
+        }
+    });
 }
 %end
