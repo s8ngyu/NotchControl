@@ -49,6 +49,7 @@ __attribute__((unused)) static UIImage* UIKitImage(NSString* imgName)
 		[NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(updateTime) userInfo:nil repeats:YES];
 
 		gestureView = [[UIView alloc] initWithFrame:CGRectMake(83, -30, 209, 65)]; //Size for iPX, IPXS
+		gestureView = [[UIView alloc] initWithFrame:CGRectMake(90, -30, 209, 65)]; //Size for iPXS Max
 		gestureView.backgroundColor = [UIColor clearColor];
 		gestureView.clipsToBounds = YES;
 		gestureView.layer.cornerRadius = 23;
@@ -60,6 +61,7 @@ __attribute__((unused)) static UIImage* UIKitImage(NSString* imgName)
     	[gestureView addGestureRecognizer:downGestureRecognizer];
 
 		notchView = [[UIView alloc] initWithFrame:CGRectMake(83, -120, 209, 120)]; //Size for iPX, IPXS
+		notchView = [[UIView alloc] initWithFrame:CGRectMake(90, -120, 209, 120)]; //Size for iPXS Max
 		notchView.backgroundColor = [UIColor blackColor];
 		notchView.clipsToBounds = YES;
 		notchView.layer.cornerRadius = 23;
@@ -83,7 +85,7 @@ __attribute__((unused)) static UIImage* UIKitImage(NSString* imgName)
 		[scrollView addSubview:musicPreviewView];
 
 		artWorkView = [[UIImageView alloc] initWithFrame:CGRectMake(7, 5, 50, 50)];
-		artWorkView.backgroundColor = [UIColor greenColor];
+		artWorkView.backgroundColor = [UIColor whiteColor];
 		artWorkView.clipsToBounds = YES;
 		artWorkView.layer.cornerRadius = 15;
 		[musicPreviewView addSubview:artWorkView];
