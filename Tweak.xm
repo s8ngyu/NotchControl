@@ -131,7 +131,7 @@ __attribute__((unused)) static UIImage* UIKitImage(NSString* imgName)
 		[musicNextView addGestureRecognizer:musicNextTap];
 		//Music Control End
 
-		//Essenstials Start
+		//Clock Start
 		clockView = [[UIView alloc] initWithFrame:CGRectMake(scrollView.frame.size.width * 2, 0, scrollView.frame.size.width, scrollView.frame.size.height)];
 		clockView.backgroundColor = [UIColor blackColor];
 		[scrollView addSubview:clockView];
@@ -147,7 +147,7 @@ __attribute__((unused)) static UIImage* UIKitImage(NSString* imgName)
 		clockLabel.textColor = [UIColor whiteColor];
 		clockLabel.textAlignment = NSTextAlignmentCenter;
 		[clockView addSubview:clockLabel];
-		//Essenstials End
+		//Clock End
 	}
 }
 
