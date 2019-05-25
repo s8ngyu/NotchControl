@@ -1,5 +1,7 @@
 #import "./headers/MarqueeLabel.h"
 #import "./headers/MediaRemote.h"
+#import "./headers/AWeatherModel.h"
+#import "./headers/WeatherHeaders.h"
 #import "./headers/UIImage+tintColor.h"
 #import "./headers/UIImage+ScaledImage.h"
 
@@ -22,6 +24,11 @@ UIImageView *musicNextView;
 //Clock
 UIView *clockView;
 UILabel *clockLabel;
+
+//Weather
+UIView *weatherView;
+UIImageView *conditionView;
+UILabel *tempLabel;
 
 __attribute__((unused)) static UIImage* UIKitImage(NSString* imgName)
 {
@@ -46,6 +53,7 @@ __attribute__((unused)) static UIImage* UIKitImage(NSString* imgName)
 	if (!gestureView) {
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateInfo) name:(__bridge NSString*)kMRMediaRemoteNowPlayingInfoDidChangeNotification object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateButton) name:(__bridge NSString*)kMRMediaRemoteNowPlayingApplicationIsPlayingDidChangeNotification object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateWeather) name:@"weatherTimerUpdate" object:nil];
 		[NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(updateTime) userInfo:nil repeats:YES];
 
 		gestureView = [[UIView alloc] initWithFrame:CGRectMake(83, -30, 209, 65)]; //Size for iPX, IPXS
@@ -77,7 +85,7 @@ __attribute__((unused)) static UIImage* UIKitImage(NSString* imgName)
 		scrollView.pagingEnabled = YES;
 		[notchView addSubview:scrollView];
 
-		[scrollView setContentSize:CGSizeMake(notchView.frame.size.width * 3, 60)];
+		[scrollView setContentSize:CGSizeMake(notchView.frame.size.width * 4, 60)];
 
 		//Music Preview View Start
 		musicPreviewView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, scrollView.frame.size.width, scrollView.frame.size.height)];
@@ -85,7 +93,7 @@ __attribute__((unused)) static UIImage* UIKitImage(NSString* imgName)
 		[scrollView addSubview:musicPreviewView];
 
 		artWorkView = [[UIImageView alloc] initWithFrame:CGRectMake(7, 5, 50, 50)];
-		artWorkView.backgroundColor = [UIColor whiteColor];
+		artWorkView.backgroundColor = [UIColor greenColor];
 		artWorkView.clipsToBounds = YES;
 		artWorkView.layer.cornerRadius = 15;
 		[musicPreviewView addSubview:artWorkView];
@@ -150,6 +158,21 @@ __attribute__((unused)) static UIImage* UIKitImage(NSString* imgName)
 		clockLabel.textAlignment = NSTextAlignmentCenter;
 		[clockView addSubview:clockLabel];
 		//Clock End
+
+		//Weather Start
+		weatherView = [[UIView alloc] initWithFrame:CGRectMake(scrollView.frame.size.width * 3, 0, scrollView.frame.size.width, scrollView.frame.size.height)];
+		weatherView.backgroundColor = [UIColor blackColor];
+		[scrollView addSubview:weatherView];
+
+		conditionView = [[UIImageView alloc] initWithFrame:CGRectMake(55, 10, 40, 40)];
+		[weatherView addSubview:conditionView];
+
+		tempLabel = [[UILabel alloc] initWithFrame:CGRectMake(110, 15, 80, 30)];
+		tempLabel.font = [UIFont fontWithName:@".SFUIText" size:30];
+		tempLabel.text = @"27˚";
+		tempLabel.textColor = [UIColor whiteColor];
+		[weatherView addSubview:tempLabel];
+		//Weather End
 	}
 }
 
@@ -230,5 +253,13 @@ __attribute__((unused)) static UIImage* UIKitImage(NSString* imgName)
 	NSString *dateString = [dateFormatter stringFromDate:curDate];
 	
 	clockLabel.text = dateString;
+}
+
+%new
+-(void)updateWeather {
+	AWeatherModel *weatherModel = [%c(AWeatherModel) sharedInstance];
+	tempLabel.text = [weatherModel localeTemperature];
+
+	conditionView.image = [weatherModel glyphWithOption:ConditionOptionDefault];
 }
 %end
