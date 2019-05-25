@@ -154,7 +154,7 @@ __attribute__((unused)) static UIImage* UIKitImage(NSString* imgName)
 		[dateFormatter setDateFormat:@"HH:mm"];
 		NSString *dateString = [dateFormatter stringFromDate:curDate];
 
-		clockLabel = [[UILabel alloc] initWithFrame:CGRectMake(54.5, 15, 100, 30)];
+		clockLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 15, 209, 30)];
 		clockLabel.font = [UIFont fontWithName:@".SFUIText" size:30];
 		clockLabel.text = dateString;
 		clockLabel.textColor = [UIColor whiteColor];
@@ -252,7 +252,7 @@ __attribute__((unused)) static UIImage* UIKitImage(NSString* imgName)
 -(void)updateTime {
 	NSDate *curDate = [NSDate date];
 	NSDateFormatter *dateFormatter = [[NSDateFormatter alloc]init];
-	[dateFormatter setDateFormat:@"hh:mm"];
+	[dateFormatter setDateFormat:@"hh:mm:ss"];
 	NSString *dateString = [dateFormatter stringFromDate:curDate];
 	
 	clockLabel.text = dateString;
