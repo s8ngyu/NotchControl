@@ -19,7 +19,7 @@ UIImageView *musicBackView;
 UIImageView *musicPlayView;
 UIImageView *musicNextView;
 
-//Essenstials
+//Clock
 UIView *clockView;
 UILabel *clockLabel;
 
