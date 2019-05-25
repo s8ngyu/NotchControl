@@ -96,7 +96,7 @@ __attribute__((unused)) static UIImage* UIKitImage(NSString* imgName)
 		[scrollView addSubview:musicPreviewView];
 
 		artWorkView = [[UIImageView alloc] initWithFrame:CGRectMake(7, 5, 50, 50)];
-		artWorkView.backgroundColor = [UIColor greenColor];
+		artWorkView.image = [UIImage imageWithContentsOfFile:@"/Library/Application Support/NotchControl/noalbumart.png"];
 		artWorkView.clipsToBounds = YES;
 		artWorkView.layer.cornerRadius = 15;
 		[musicPreviewView addSubview:artWorkView];
@@ -129,6 +129,7 @@ __attribute__((unused)) static UIImage* UIKitImage(NSString* imgName)
 		musicPlayView = [[UIImageView alloc] initWithFrame:CGRectMake(94.5, 20, 20, 20)];
 		musicPlayView.backgroundColor = [UIColor clearColor];
 		musicPlayView.userInteractionEnabled = YES;
+		musicPlayView.image = UIKitImage(@"UIButtonBarPlay");
 		[musicControlView addSubview:musicPlayView];
 		UITapGestureRecognizer *musicPlayTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(musicPlayTap:)];
 		musicPlayTap.numberOfTapsRequired = 1;
@@ -210,6 +211,8 @@ __attribute__((unused)) static UIImage* UIKitImage(NSString* imgName)
 		if ([dict objectForKey:(__bridge NSString *)kMRMediaRemoteNowPlayingInfoArtworkData] != nil) {
 			NSData *artworkData = [dict objectForKey:(__bridge NSString *)kMRMediaRemoteNowPlayingInfoArtworkData];
 			artWorkView.image = [UIImage imageWithData:artworkData];
+		} else {
+			artWorkView.image = [UIImage imageWithContentsOfFile:@"/Library/Application Support/NotchControl/noalbumart.png"];
 		}
 	});
 
