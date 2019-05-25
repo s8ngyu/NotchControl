@@ -49,6 +49,11 @@ __attribute__((unused)) static UIImage* UIKitImage(NSString* imgName)
 %hook UIWindow
 -(void)layoutSubviews {
 	%orig;
+	CGFloat width = [UIScreen mainScreen].bounds.size.width;
+
+	if (width != self.frame.size.width) return;
+
+	CGFloat withoutNotch = width - 209;
 
 	if (!gestureView) {
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateInfo) name:(__bridge NSString*)kMRMediaRemoteNowPlayingInfoDidChangeNotification object:nil];
@@ -56,8 +61,7 @@ __attribute__((unused)) static UIImage* UIKitImage(NSString* imgName)
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateWeather) name:@"weatherTimerUpdate" object:nil];
 		[NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(updateTime) userInfo:nil repeats:YES];
 
-		gestureView = [[UIView alloc] initWithFrame:CGRectMake(83, -30, 209, 65)]; //Size for iPX, IPXS
-		gestureView = [[UIView alloc] initWithFrame:CGRectMake(90, -30, 209, 65)]; //Size for iPXS Max
+		gestureView = [[UIView alloc] initWithFrame:CGRectMake(withoutNotch/2, -30, 209, 65)]; //Size for iPX, IPXS
 		gestureView.backgroundColor = [UIColor clearColor];
 		gestureView.clipsToBounds = YES;
 		gestureView.layer.cornerRadius = 23;
@@ -68,8 +72,7 @@ __attribute__((unused)) static UIImage* UIKitImage(NSString* imgName)
     	downGestureRecognizer.numberOfTouchesRequired = 1;
     	[gestureView addGestureRecognizer:downGestureRecognizer];
 
-		notchView = [[UIView alloc] initWithFrame:CGRectMake(83, -120, 209, 120)]; //Size for iPX, IPXS
-		notchView = [[UIView alloc] initWithFrame:CGRectMake(90, -120, 209, 120)]; //Size for iPXS Max
+		notchView = [[UIView alloc] initWithFrame:CGRectMake(withoutNotch/2, -120, 209, 120)]; //Size for iPX, IPXS
 		notchView.backgroundColor = [UIColor blackColor];
 		notchView.clipsToBounds = YES;
 		notchView.layer.cornerRadius = 23;
