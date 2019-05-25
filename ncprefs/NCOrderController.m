@@ -146,7 +146,8 @@
     return cell;
 }
 
-- (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)fromIndexPath toIndexPath:(NSIndexPath *)toIndexPath{
+- (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)fromIndexPath toIndexPath:(NSIndexPath *)toIndexPath {
+    //nothing
 }
 
 - (void)tableView:(UITableView *)tableView didEndReorderingRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -154,31 +155,10 @@
 
     [file setObject:self.getEnabledModules forKey:@"kEnabledModules"];
     [file setObject:self.getDisabledModules forKey:@"kDisabledModules"];
+    CFNotificationCenterPostNotification(CFNotificationCenterGetDarwinNotifyCenter(), CFSTR("com.peterdev.notchcontrol/settingschanged"), nil, nil, true);
 }
 
 -(UITableViewCellEditingStyle) tableView:(UITableView *)tableView editingStyleForRowAtIndexPath:(NSIndexPath *)indexPath{
     return UITableViewCellEditingStyleNone;
 }
-
-- (void) tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    [tableView deselectRowAtIndexPath:indexPath animated:YES];
-/*
-    UITableViewCell *old = [tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow: [[self.currentThemes valueForKey:@"name"] indexOfObject: selectedTheme] inSection: 0]];
-    if (old) old.accessoryType = UITableViewCellAccessoryNone;
-
-    UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
-    cell.accessoryType = UITableViewCellAccessoryCheckmark;
-
-    XENTheme *theme = (XENTheme*)[self.currentThemes objectAtIndex:indexPath.row];
-    selectedTheme = theme.name;
-
-    HBPreferences *file = [[HBPreferences alloc] initWithIdentifier:@"com.peterdev.xeon"];
-    [file setObject:selectedTheme forKey:@"IconTheme"];
-
-    XENLeftListController *parent = (XENLeftListController *)self.parentController;
-    [parent setThemeName:selectedTheme];*/
-
-    CFNotificationCenterPostNotification(CFNotificationCenterGetDarwinNotifyCenter(), CFSTR("com.peterdev.notchcontrol/settingschanged"), nil, nil, true);
-}
-
 @end

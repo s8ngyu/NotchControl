@@ -7,6 +7,5 @@
 
 @interface NCOrderController : PSViewController <UITableViewDelegate,UITableViewDataSource> {
     UITableView *_tableView;
-    NSArray *_modulesArray;
 }
 @end
