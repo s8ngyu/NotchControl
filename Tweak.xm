@@ -149,14 +149,8 @@ __attribute__((unused)) static UIImage* UIKitImage(NSString* imgName)
 		clockView.backgroundColor = [UIColor blackColor];
 		[scrollView addSubview:clockView];
 
-		NSDate *curDate = [NSDate date];
-		NSDateFormatter *dateFormatter = [[NSDateFormatter alloc]init];
-		[dateFormatter setDateFormat:@"HH:mm"];
-		NSString *dateString = [dateFormatter stringFromDate:curDate];
-
 		clockLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 15, 209, 30)];
 		clockLabel.font = [UIFont fontWithName:@".SFUIText" size:30];
-		clockLabel.text = dateString;
 		clockLabel.textColor = [UIColor whiteColor];
 		clockLabel.textAlignment = NSTextAlignmentCenter;
 		[clockView addSubview:clockLabel];
@@ -172,7 +166,6 @@ __attribute__((unused)) static UIImage* UIKitImage(NSString* imgName)
 
 		tempLabel = [[UILabel alloc] initWithFrame:CGRectMake(110, 15, 80, 30)];
 		tempLabel.font = [UIFont fontWithName:@".SFUIText" size:30];
-		tempLabel.text = @"27˚";
 		tempLabel.textColor = [UIColor whiteColor];
 		[weatherView addSubview:tempLabel];
 		//Weather End
