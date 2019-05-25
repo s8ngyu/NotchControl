@@ -12,15 +12,13 @@
 		</dict>
 		<dict>
 			<key>cell</key>
-			<string>PSSwitchCell</string>
-			<key>default</key>
+			<string>PSLinkCell</string>
+			<key>detail</key>
+			<string>NCOrderController</string>
+			<key>isController</key>
 			<true/>
-			<key>defaults</key>
-			<string>com.peterdev.ncprefs</string>
-			<key>key</key>
-			<string>AwesomeSwitch1</string>
 			<key>label</key>
-			<string>Awesome Switch 1</string>
+			<string>Modules</string>
 		</dict>
 	</array>
 	<key>title</key>

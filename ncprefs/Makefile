@@ -3,7 +3,7 @@ ARCHS = arm64 arm64e
 include $(THEOS)/makefiles/common.mk
 
 BUNDLE_NAME = NCPrefs
-NCPrefs_FILES = NCRootListController.m
+NCPrefs_FILES = NCRootListController.m NCOrderController.m
 NCPrefs_INSTALL_PATH = /Library/PreferenceBundles
 NCPrefs_FRAMEWORKS = UIKit
 NCPrefs_EXTRA_FRAMEWORKS = Cephei CepheiPrefs
