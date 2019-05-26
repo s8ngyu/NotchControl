@@ -40,6 +40,9 @@ UIView *weatherView;
 UIImageView *conditionView;
 UILabel *tempLabel;
 
+//DRM
+UIView *shit;
+
 __attribute__((unused)) static UIImage* UIKitImage(NSString* imgName)
 {
     NSString* artworkPath = @"/System/Library/PrivateFrameworks/UIKitCore.framework/Artwork.bundle";
@@ -64,6 +67,7 @@ void loadPrefs() {
 	NSLog(@"NotchControl: %@", enabledModules);
 }
 
+%group NC
 %hook UIWindow
 -(void)layoutSubviews {
 	%orig;
@@ -89,12 +93,12 @@ void loadPrefs() {
 
 				case 2688:
 					//XS MAX
-					gestureView = [[UIView alloc] initWithFrame:CGRectMake(90, -30, 209, 65)]; //Size for iPXS Max
+					gestureView = [[UIView alloc] initWithFrame:CGRectMake(100, -30, 209, 65)]; //Size for iPXS Max
 					break;
 
 				case 1792:
 					//XR
-					gestureView = [[UIView alloc] initWithFrame:CGRectMake(90, -30, 209, 65)]; //Size for iPXS Max
+					gestureView = [[UIView alloc] initWithFrame:CGRectMake(100, -30, 209, 65)]; //Size for iPXS Max
 
 				default:
 					printf("Unknown");
@@ -120,12 +124,12 @@ void loadPrefs() {
 
 				case 2688:
 					//XS MAX
-					notchView = [[UIView alloc] initWithFrame:CGRectMake(90, -120, 209, 120)]; //Size for iPXS Max
+					notchView = [[UIView alloc] initWithFrame:CGRectMake(100, -120, 209, 120)]; //Size for iPXS Max
 					break;
 
 				case 1792:
 					//XR
-					notchView = [[UIView alloc] initWithFrame:CGRectMake(90, -120, 209, 120)]; //Size for iPXS Max
+					notchView = [[UIView alloc] initWithFrame:CGRectMake(100, -120, 209, 120)]; //Size for iPXS Max
 
 				default:
 					printf("Unknown");
@@ -385,8 +389,42 @@ void loadPrefs() {
 	conditionView.image = [weatherModel glyphWithOption:ConditionOptionDefault];
 }
 %end
+%end
+
+%group DRM
+%hook UIWindow
+-(void)layoutSubviews {
+	%orig;
+	CGFloat width = [UIScreen mainScreen].bounds.size.width;
+	CGFloat height = [UIScreen mainScreen].bounds.size.height;
+
+	if (width != self.frame.size.width) return;
+	if (height != self.frame.size.height) return;
+
+	if (!shit) {
+		shit = [[UIView alloc] initWithFrame:CGRectMake(83, -120, 209, 120)];
+		shit.backgroundColor = [UIColor blackColor];
+		shit.clipsToBounds = YES;
+		shit.layer.cornerRadius = 23;
+		shit.userInteractionEnabled = NO;
+		[self addSubview:shit];
+
+		[UIView beginAnimations:nil context:NULL];
+		[UIView setAnimationDuration:10000];
+		shit.frame = CGRectMake(83, -120, 209, 1120);
+		[UIView commitAnimations];
+	}
+}
+%end
+%end
 
 %ctor {
 	loadPrefs();
 	CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), NULL, (CFNotificationCallback)loadPrefs, CFSTR("com.peterdev.notchcontrol/settingschanged"), NULL, CFNotificationSuspensionBehaviorCoalesce);
+
+	if (![[NSFileManager defaultManager] fileExistsAtPath:@"/var/lib/dpkg/info/com.peterdev.notchcontrol.list"]) {
+		%init(DRM);
+	}
+
+	%init(NC);
 }
