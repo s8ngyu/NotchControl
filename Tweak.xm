@@ -82,7 +82,27 @@ void loadPrefs() {
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateWeather) name:@"weatherTimerUpdate" object:nil];
 		[NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(updateTime) userInfo:nil repeats:YES];
 
-		gestureView = [[UIView alloc] initWithFrame:CGRectMake(withoutNotch/2, -30, 209, 65)]; //Size for iPX, IPXS
+		if([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
+			switch ((int)[[UIScreen mainScreen] nativeBounds].size.height) {
+				case 2436:
+					//XS
+					gestureView = [[UIView alloc] initWithFrame:CGRectMake(withoutNotch/2, -30, 209, 65)]; //Size for iPX, IPXS
+					break;
+
+				case 2688:
+					//XS MAX
+					gestureView = [[UIView alloc] initWithFrame:CGRectMake(90, -30, 209, 65)]; //Size for iPXS Max
+					break;
+
+				case 1792:
+					//XR
+					gestureView = [[UIView alloc] initWithFrame:CGRectMake(90, -30, 209, 65)]; //Size for iPXS Max
+
+				default:
+					printf("Unknown");
+					break;
+			}
+		}
 		gestureView.backgroundColor = [UIColor clearColor];
 		gestureView.clipsToBounds = YES;
 		gestureView.layer.cornerRadius = 23;
@@ -93,6 +113,27 @@ void loadPrefs() {
     	downGestureRecognizer.numberOfTouchesRequired = 1;
     	[gestureView addGestureRecognizer:downGestureRecognizer];
 
+		if([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
+			switch ((int)[[UIScreen mainScreen] nativeBounds].size.height) {
+				case 2436:
+					//XS
+					notchView = [[UIView alloc] initWithFrame:CGRectMake(withoutNotch/2, -120, 209, 120)]; //Size for iPX, IPXS
+					break;
+
+				case 2688:
+					//XS MAX
+					notchView = [[UIView alloc] initWithFrame:CGRectMake(90, -120, 209, 120)]; //Size for iPXS Max
+					break;
+
+				case 1792:
+					//XR
+					notchView = [[UIView alloc] initWithFrame:CGRectMake(90, -120, 209, 120)]; //Size for iPXS Max
+
+				default:
+					printf("Unknown");
+					break;
+			}
+		}
 		notchView = [[UIView alloc] initWithFrame:CGRectMake(withoutNotch/2, -120, 209, 120)]; //Size for iPX, IPXS
 		notchView.backgroundColor = [UIColor blackColor];
 		notchView.clipsToBounds = YES;
