@@ -50,8 +50,10 @@ __attribute__((unused)) static UIImage* UIKitImage(NSString* imgName)
 -(void)layoutSubviews {
 	%orig;
 	CGFloat width = [UIScreen mainScreen].bounds.size.width;
+	CGFloat height = [UIScreen mainScreen].bounds.size.height;
 
 	if (width != self.frame.size.width) return;
+	if (height != self.frame.size.height) return;
 
 	CGFloat withoutNotch = width - 209;
 
@@ -162,7 +164,7 @@ __attribute__((unused)) static UIImage* UIKitImage(NSString* imgName)
 		weatherView.backgroundColor = [UIColor blackColor];
 		[scrollView addSubview:weatherView];
 
-		conditionView = [[UIImageView alloc] initWithFrame:CGRectMake(55, 10, 40, 40)];
+		conditionView = [[UIImageView alloc] initWithFrame:CGRectMake(60, 10, 40, 40)];
 		[weatherView addSubview:conditionView];
 
 		tempLabel = [[UILabel alloc] initWithFrame:CGRectMake(110, 15, 80, 30)];
