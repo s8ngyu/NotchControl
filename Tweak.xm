@@ -1,3 +1,4 @@
+#import <Cephei/HBPreferences.h>
 #import "./headers/MarqueeLabel.h"
 #import "./headers/MediaRemote.h"
 #import "./headers/AWeatherModel.h"
@@ -8,6 +9,7 @@
 UIView *gestureView;
 UIView *notchView;
 UIScrollView *scrollView;
+NSMutableArray *enabledModules;
 
 //Music Preview View
 UIView *musicPreviewView;
@@ -44,6 +46,14 @@ __attribute__((unused)) static UIImage* UIKitImage(NSString* imgName)
 	barsImg = [barsImg scaleImageToSize:CGSizeMake(20, 20)];
 
     return barsImg;
+}
+
+void loadPrefs() {
+	HBPreferences *file = [[HBPreferences alloc] initWithIdentifier:@"com.peterdev.notchcontrol"];
+
+	enabledModules = [[NSMutableArray alloc] init];
+	enabledModules = [file objectForKey:@"kEnabledModules"];
+	NSLog(@"NotchControl: %@", enabledModules);
 }
 
 %hook UIWindow
@@ -264,3 +274,8 @@ __attribute__((unused)) static UIImage* UIKitImage(NSString* imgName)
 	conditionView.image = [weatherModel glyphWithOption:ConditionOptionDefault];
 }
 %end
+
+%ctor {
+	loadPrefs();
+	CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), NULL, (CFNotificationCallback)loadPrefs, CFSTR("com.peterdev.notchcontrol/settingschanged"), NULL, CFNotificationSuspensionBehaviorCoalesce);
+}
