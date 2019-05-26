@@ -73,8 +73,6 @@ void loadPrefs() {
 	if (width != self.frame.size.width) return;
 	if (height != self.frame.size.height) return;
 
-	CGFloat withoutNotch = width - 209;
-
 	if (!gestureView) {
 		loadPrefs();
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateInfo) name:(__bridge NSString*)kMRMediaRemoteNowPlayingInfoDidChangeNotification object:nil];
@@ -86,7 +84,7 @@ void loadPrefs() {
 			switch ((int)[[UIScreen mainScreen] nativeBounds].size.height) {
 				case 2436:
 					//XS
-					gestureView = [[UIView alloc] initWithFrame:CGRectMake(withoutNotch/2, -30, 209, 65)]; //Size for iPX, IPXS
+					gestureView = [[UIView alloc] initWithFrame:CGRectMake(83, -30, 209, 65)]; //Size for iPX, IPXS
 					break;
 
 				case 2688:
@@ -117,7 +115,7 @@ void loadPrefs() {
 			switch ((int)[[UIScreen mainScreen] nativeBounds].size.height) {
 				case 2436:
 					//XS
-					notchView = [[UIView alloc] initWithFrame:CGRectMake(withoutNotch/2, -120, 209, 120)]; //Size for iPX, IPXS
+					notchView = [[UIView alloc] initWithFrame:CGRectMake(83, -120, 209, 120)]; //Size for iPX, IPXS
 					break;
 
 				case 2688:
@@ -134,7 +132,6 @@ void loadPrefs() {
 					break;
 			}
 		}
-		notchView = [[UIView alloc] initWithFrame:CGRectMake(withoutNotch/2, -120, 209, 120)]; //Size for iPX, IPXS
 		notchView.backgroundColor = [UIColor blackColor];
 		notchView.clipsToBounds = YES;
 		notchView.layer.cornerRadius = 23;
