@@ -6,6 +6,7 @@
 #import "./headers/UIImage+tintColor.h"
 #import "./headers/UIImage+ScaledImage.h"
 
+//Base
 UIView *gestureView;
 UIView *notchView;
 UIScrollView *scrollView;
