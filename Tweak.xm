@@ -70,328 +70,328 @@ void loadPrefs() {
 }
 
 %group NC
-%hook UIWindow
--(void)layoutSubviews {
-	%orig;
-	CGFloat width = [UIScreen mainScreen].bounds.size.width;
-	CGFloat height = [UIScreen mainScreen].bounds.size.height;
+	%hook UIWindow
+	-(void)layoutSubviews {
+		%orig;
+		CGFloat width = [UIScreen mainScreen].bounds.size.width;
+		CGFloat height = [UIScreen mainScreen].bounds.size.height;
 
-	if (width != self.frame.size.width) return;
-	if (height != self.frame.size.height) return;
+		if (width != self.frame.size.width) return;
+		if (height != self.frame.size.height) return;
 
-	if (!gestureView) {
-		if([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
-			switch ((int)[[UIScreen mainScreen] nativeBounds].size.height) {
-				case 2436:
-					//XS
-					gestureView = [[UIView alloc] initWithFrame:CGRectMake(83, -30, 209, 65)]; //Size for iPX, IPXS
-					break;
+		if (!gestureView) {
+			if([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
+				switch ((int)[[UIScreen mainScreen] nativeBounds].size.height) {
+					case 2436:
+						//XS
+						gestureView = [[UIView alloc] initWithFrame:CGRectMake(83, -30, 209, 65)]; //Size for iPX, IPXS
+						break;
 
-				case 2688:
-					//XS MAX
-					gestureView = [[UIView alloc] initWithFrame:CGRectMake(100, -30, 209, 65)]; //Size for iPXS Max
-					break;
+					case 2688:
+						//XS MAX
+						gestureView = [[UIView alloc] initWithFrame:CGRectMake(100, -30, 209, 65)]; //Size for iPXS Max
+						break;
 
-				case 1792:
-					//XR
-					gestureView = [[UIView alloc] initWithFrame:CGRectMake(100, -30, 209, 65)]; //Size for iPXS Max
+					case 1792:
+						//XR
+						gestureView = [[UIView alloc] initWithFrame:CGRectMake(100, -30, 209, 65)]; //Size for iPXS Max
 
-				default:
-					printf("Unknown");
-					break;
+					default:
+						printf("Unknown");
+						break;
+				}
 			}
-		}
-		gestureView.backgroundColor = [UIColor clearColor];
-		gestureView.clipsToBounds = YES;
-		gestureView.layer.cornerRadius = 23;
-		[self addSubview:gestureView];
+			gestureView.backgroundColor = [UIColor clearColor];
+			gestureView.clipsToBounds = YES;
+			gestureView.layer.cornerRadius = 23;
+			[self addSubview:gestureView];
 
-		UISwipeGestureRecognizer *downGestureRecognizer = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(swipedNotch:)];
-    	downGestureRecognizer.direction = UISwipeGestureRecognizerDirectionDown;
-    	downGestureRecognizer.numberOfTouchesRequired = 1;
-    	[gestureView addGestureRecognizer:downGestureRecognizer];
+			UISwipeGestureRecognizer *downGestureRecognizer = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(swipedNotch:)];
+			downGestureRecognizer.direction = UISwipeGestureRecognizerDirectionDown;
+			downGestureRecognizer.numberOfTouchesRequired = 1;
+			[gestureView addGestureRecognizer:downGestureRecognizer];
 
-		if([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
-			switch ((int)[[UIScreen mainScreen] nativeBounds].size.height) {
-				case 2436:
-					//XS
-					notchView = [[UIView alloc] initWithFrame:CGRectMake(83, -120, 209, 120)]; //Size for iPX, IPXS
-					break;
+			if([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
+				switch ((int)[[UIScreen mainScreen] nativeBounds].size.height) {
+					case 2436:
+						//XS
+						notchView = [[UIView alloc] initWithFrame:CGRectMake(83, -120, 209, 120)]; //Size for iPX, IPXS
+						break;
 
-				case 2688:
-					//XS MAX
-					notchView = [[UIView alloc] initWithFrame:CGRectMake(100, -120, 209, 120)]; //Size for iPXS Max
-					break;
+					case 2688:
+						//XS MAX
+						notchView = [[UIView alloc] initWithFrame:CGRectMake(100, -120, 209, 120)]; //Size for iPXS Max
+						break;
 
-				case 1792:
-					//XR
-					notchView = [[UIView alloc] initWithFrame:CGRectMake(100, -120, 209, 120)]; //Size for iPXS Max
+					case 1792:
+						//XR
+						notchView = [[UIView alloc] initWithFrame:CGRectMake(100, -120, 209, 120)]; //Size for iPXS Max
 
-				default:
-					printf("Unknown");
-					break;
+					default:
+						printf("Unknown");
+						break;
+				}
 			}
+			notchView.backgroundColor = [UIColor blackColor];
+			notchView.clipsToBounds = YES;
+			notchView.layer.cornerRadius = 23;
+			[self addSubview:notchView];
+
+			UISwipeGestureRecognizer *upGestureRecognizer = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(swipedUpNotch:)];
+			upGestureRecognizer.direction = UISwipeGestureRecognizerDirectionUp;
+			upGestureRecognizer.numberOfTouchesRequired = 1;
+			[notchView addGestureRecognizer:upGestureRecognizer];
+
+			scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0, 60, notchView.frame.size.width, 60)];
+			scrollView.backgroundColor = [UIColor blackColor];
+			scrollView.pagingEnabled = YES;
+			[notchView addSubview:scrollView];
+
+			[self reorderViews];
 		}
-		notchView.backgroundColor = [UIColor blackColor];
-		notchView.clipsToBounds = YES;
-		notchView.layer.cornerRadius = 23;
-		[self addSubview:notchView];
+	}
 
-		UISwipeGestureRecognizer *upGestureRecognizer = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(swipedUpNotch:)];
-    	upGestureRecognizer.direction = UISwipeGestureRecognizerDirectionUp;
-    	upGestureRecognizer.numberOfTouchesRequired = 1;
-    	[notchView addGestureRecognizer:upGestureRecognizer];
+	%new
+	-(void)reorderViews {
+		loadPrefs();
+		[scrollView setContentSize:CGSizeMake(notchView.frame.size.width * enabledModules.count, 60)];
 
-		scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0, 60, notchView.frame.size.width, 60)];
-		scrollView.backgroundColor = [UIColor blackColor];
-		scrollView.pagingEnabled = YES;
-		[notchView addSubview:scrollView];
+		[scrollView.subviews makeObjectsPerformSelector: @selector(removeFromSuperview)];
+		int i = 0;
+		for (NSString *string in enabledModules) {
+			if ([string isEqualToString:@"Now Playing"]) {
+				[self addNowPlayingModule:i];
+			} else if ([string isEqualToString:@"Music Controller"]) {
+				[self addMusicControlModule:i];
+			} else if ([string isEqualToString:@"Clock"]) {
+				[self addClockModule:i];
+			} else if ([string isEqualToString:@"Weather"]) {
+				[self addWeatherModule:i];
+			}
+			i = i + 1;
+		}
+	}
 
+	%new
+	-(void)addNowPlayingModule:(int)page {
+		//Music Preview View Start
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateInfo) name:(__bridge NSString*)kMRMediaRemoteNowPlayingInfoDidChangeNotification object:nil];
+
+		musicPreviewView = [[UIView alloc] initWithFrame:CGRectMake(scrollView.frame.size.width * page, 0, scrollView.frame.size.width, scrollView.frame.size.height)];
+		musicPreviewView.backgroundColor = [UIColor blackColor];
+		[scrollView addSubview:musicPreviewView];
+
+		artWorkView = [[UIImageView alloc] initWithFrame:CGRectMake(7, 5, 50, 50)];
+		artWorkView.image = [UIImage imageWithContentsOfFile:@"/Library/Application Support/NotchControl/noalbumart.png"];
+		artWorkView.clipsToBounds = YES;
+		artWorkView.layer.cornerRadius = 15;
+		[musicPreviewView addSubview:artWorkView];
+
+		musicTitleLabel = [[MarqueeLabel alloc] initWithFrame:CGRectMake(60, 10, 140, 15) duration:8.0 andFadeLength:10.0f];
+		musicTitleLabel.font = [UIFont fontWithName:@".SFUIText-Bold" size:15];
+		musicTitleLabel.textColor = [UIColor whiteColor];
+		[musicPreviewView addSubview:musicTitleLabel];
+
+		musicArtistLabel = [[MarqueeLabel alloc] initWithFrame:CGRectMake(60, 30, 140, 15) duration:8.0 andFadeLength:10.0f];
+		musicArtistLabel.font = [UIFont fontWithName:@".SFUIText" size:15];
+		musicArtistLabel.textColor = [UIColor whiteColor];
+		[musicPreviewView addSubview:musicArtistLabel];
+		//Music Preview View End
+	}
+
+	%new
+	-(void)addMusicControlModule:(int)page {
+		//Music Control Start
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateButton) name:(__bridge NSString*)kMRMediaRemoteNowPlayingApplicationIsPlayingDidChangeNotification object:nil];
+
+		musicControlView = [[UIView alloc] initWithFrame:CGRectMake(scrollView.frame.size.width * page, 0, scrollView.frame.size.width, scrollView.frame.size.height)];
+		musicControlView.backgroundColor = [UIColor blackColor];
+		[scrollView addSubview:musicControlView];
+
+		musicBackView = [[UIImageView alloc] initWithFrame:CGRectMake(15, 20, 20, 20)];
+		musicBackView.backgroundColor = [UIColor clearColor];
+		musicBackView.image = UIKitImage(@"UIButtonBarRewind");
+		musicBackView.userInteractionEnabled = YES;
+		[musicControlView addSubview:musicBackView];
+		UITapGestureRecognizer *musicBackTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(musicBackTap:)];
+		musicBackTap.numberOfTapsRequired = 1;
+		[musicBackView addGestureRecognizer:musicBackTap];
+
+		musicPlayView = [[UIImageView alloc] initWithFrame:CGRectMake(94.5, 20, 20, 20)];
+		musicPlayView.backgroundColor = [UIColor clearColor];
+		musicPlayView.userInteractionEnabled = YES;
+		musicPlayView.image = UIKitImage(@"UIButtonBarPlay");
+		[musicControlView addSubview:musicPlayView];
+		UITapGestureRecognizer *musicPlayTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(musicPlayTap:)];
+		musicPlayTap.numberOfTapsRequired = 1;
+		[musicPlayView addGestureRecognizer:musicPlayTap];
+
+		musicNextView = [[UIImageView alloc] initWithFrame:CGRectMake(174, 20, 20, 20)];
+		musicNextView.backgroundColor = [UIColor clearColor];
+		musicNextView.image = UIKitImage(@"UIButtonBarFastForward");
+		musicNextView.userInteractionEnabled = YES;
+		[musicControlView addSubview:musicNextView];
+		UITapGestureRecognizer *musicNextTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(musicNextTap:)];
+		musicNextTap.numberOfTapsRequired = 1;
+		[musicNextView addGestureRecognizer:musicNextTap];
+		//Music Control End
+	}
+
+	%new
+	-(void)addClockModule:(int)page {
+		//Clock Start
+		[NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(updateTime) userInfo:nil repeats:YES];
+
+		clockView = [[UIView alloc] initWithFrame:CGRectMake(scrollView.frame.size.width * page, 0, scrollView.frame.size.width, scrollView.frame.size.height)];
+		clockView.backgroundColor = [UIColor blackColor];
+		[scrollView addSubview:clockView];
+
+		clockLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 15, 209, 30)];
+		clockLabel.font = [UIFont fontWithName:@".SFUIText" size:30];
+		clockLabel.textColor = [UIColor whiteColor];
+		clockLabel.textAlignment = NSTextAlignmentCenter;
+		[clockView addSubview:clockLabel];
+		//Clock End
+	}
+
+	%new
+	-(void)addWeatherModule:(int)page {
+		//Weather Start
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateWeather) name:@"weatherTimerUpdate" object:nil];
+
+		weatherView = [[UIView alloc] initWithFrame:CGRectMake(scrollView.frame.size.width * page, 0, scrollView.frame.size.width, scrollView.frame.size.height)];
+		weatherView.backgroundColor = [UIColor blackColor];
+		[scrollView addSubview:weatherView];
+
+		conditionView = [[UIImageView alloc] initWithFrame:CGRectMake(60, 10, 40, 40)];
+		[weatherView addSubview:conditionView];
+
+		tempLabel = [[UILabel alloc] initWithFrame:CGRectMake(110, 15, 80, 30)];
+		tempLabel.font = [UIFont fontWithName:@".SFUIText" size:30];
+		tempLabel.textColor = [UIColor whiteColor];
+		[weatherView addSubview:tempLabel];
+
+		[self updateWeather];
+		//Weather End
+	}
+
+	%new
+	-(void)swipedNotch:(UISwipeGestureRecognizer *)gesture {
 		[self reorderViews];
+		[UIView beginAnimations:nil context:NULL];
+		[UIView setAnimationDuration:0.5];
+		notchView.frame = CGRectMake(83, -30, 209, 120);
+		[UIView commitAnimations];
 	}
-}
 
-%new
--(void)reorderViews {
-	loadPrefs();
-	[scrollView setContentSize:CGSizeMake(notchView.frame.size.width * enabledModules.count, 60)];
-
-	[scrollView.subviews makeObjectsPerformSelector: @selector(removeFromSuperview)];
-	int i = 0;
-	for (NSString *string in enabledModules) {
-		if ([string isEqualToString:@"Now Playing"]) {
-			[self addNowPlayingModule:i];
-		} else if ([string isEqualToString:@"Music Controller"]) {
-			[self addMusicControlModule:i];
-		} else if ([string isEqualToString:@"Clock"]) {
-			[self addClockModule:i];
-		} else if ([string isEqualToString:@"Weather"]) {
-			[self addWeatherModule:i];
-		}
-		i = i + 1;
+	%new
+	-(void)swipedUpNotch:(UISwipeGestureRecognizer *)gesture {
+		[UIView beginAnimations:nil context:NULL];
+		[UIView setAnimationDuration:0.5];
+		notchView.frame = CGRectMake(83, -120, 209, 120);
+		[UIView commitAnimations];
 	}
-}
 
-%new
--(void)addNowPlayingModule:(int)page {
-	//Music Preview View Start
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateInfo) name:(__bridge NSString*)kMRMediaRemoteNowPlayingInfoDidChangeNotification object:nil];
+	%new
+	-(void)musicBackTap:(UITapGestureRecognizer *)gesture {
+		MRMediaRemoteSendCommand(kMRPreviousTrack, nil);
+	}
 
-	musicPreviewView = [[UIView alloc] initWithFrame:CGRectMake(scrollView.frame.size.width * page, 0, scrollView.frame.size.width, scrollView.frame.size.height)];
-	musicPreviewView.backgroundColor = [UIColor blackColor];
-	[scrollView addSubview:musicPreviewView];
+	%new
+	-(void)musicPlayTap:(UITapGestureRecognizer *)gesture {
+		MRMediaRemoteSendCommand(kMRTogglePlayPause, nil);
+	}
 
-	artWorkView = [[UIImageView alloc] initWithFrame:CGRectMake(7, 5, 50, 50)];
-	artWorkView.image = [UIImage imageWithContentsOfFile:@"/Library/Application Support/NotchControl/noalbumart.png"];
-	artWorkView.clipsToBounds = YES;
-	artWorkView.layer.cornerRadius = 15;
-	[musicPreviewView addSubview:artWorkView];
+	%new
+	-(void)musicNextTap:(UITapGestureRecognizer *)gesture {
+		MRMediaRemoteSendCommand(kMRNextTrack, nil);
+	}
 
-	musicTitleLabel = [[MarqueeLabel alloc] initWithFrame:CGRectMake(60, 10, 140, 15) duration:8.0 andFadeLength:10.0f];
-	musicTitleLabel.font = [UIFont fontWithName:@".SFUIText-Bold" size:15];
-	musicTitleLabel.textColor = [UIColor whiteColor];
-	[musicPreviewView addSubview:musicTitleLabel];
+	%new
+	-(void)updateInfo {
+		MRMediaRemoteGetNowPlayingInfo(dispatch_get_main_queue(), ^(CFDictionaryRef information) {
+			NSDictionary *dict=(__bridge NSDictionary *)(information);
+			if ([dict objectForKey:(__bridge NSString *)kMRMediaRemoteNowPlayingInfoArtworkData] != nil) {
+				NSData *artworkData = [dict objectForKey:(__bridge NSString *)kMRMediaRemoteNowPlayingInfoArtworkData];
+				artWorkView.image = [UIImage imageWithData:artworkData];
+			} else {
+				artWorkView.image = [UIImage imageWithContentsOfFile:@"/Library/Application Support/NotchControl/noalbumart.png"];
+			}
+		});
 
-	musicArtistLabel = [[MarqueeLabel alloc] initWithFrame:CGRectMake(60, 30, 140, 15) duration:8.0 andFadeLength:10.0f];
-	musicArtistLabel.font = [UIFont fontWithName:@".SFUIText" size:15];
-	musicArtistLabel.textColor = [UIColor whiteColor];
-	[musicPreviewView addSubview:musicArtistLabel];
-	//Music Preview View End
-}
+		MRMediaRemoteGetNowPlayingInfo(dispatch_get_main_queue(), ^(CFDictionaryRef information) {
+			NSDictionary *dict=(__bridge NSDictionary *)(information);
+			if ([dict objectForKey:(__bridge NSString *)kMRMediaRemoteNowPlayingInfoArtworkData] != nil) {
+				musicTitleLabel.text = [dict objectForKey:(__bridge NSString *)kMRMediaRemoteNowPlayingInfoTitle];
+			}
+		});
 
-%new
--(void)addMusicControlModule:(int)page {
-	//Music Control Start
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateButton) name:(__bridge NSString*)kMRMediaRemoteNowPlayingApplicationIsPlayingDidChangeNotification object:nil];
+		MRMediaRemoteGetNowPlayingInfo(dispatch_get_main_queue(), ^(CFDictionaryRef information) {
+			NSDictionary *dict=(__bridge NSDictionary *)(information);
+			if ([dict objectForKey:(__bridge NSString *)kMRMediaRemoteNowPlayingInfoArtworkData] != nil) {
+				musicArtistLabel.text = [dict objectForKey:(__bridge NSString *)kMRMediaRemoteNowPlayingInfoArtist];
+			}
+		});
+	}
 
-	musicControlView = [[UIView alloc] initWithFrame:CGRectMake(scrollView.frame.size.width * page, 0, scrollView.frame.size.width, scrollView.frame.size.height)];
-	musicControlView.backgroundColor = [UIColor blackColor];
-	[scrollView addSubview:musicControlView];
+	%new
+	-(void)updateButton {
+		MRMediaRemoteGetNowPlayingApplicationIsPlaying(dispatch_get_main_queue(), ^(Boolean isPlaying) {
+			if (isPlaying) {
+				//playing
+				musicPlayView.image = UIKitImage(@"UIButtonBarPause");
+			} else {
+				//paused
+				musicPlayView.image = UIKitImage(@"UIButtonBarPlay");
+			}
+		});
+	}
 
-	musicBackView = [[UIImageView alloc] initWithFrame:CGRectMake(15, 20, 20, 20)];
-	musicBackView.backgroundColor = [UIColor clearColor];
-	musicBackView.image = UIKitImage(@"UIButtonBarRewind");
-	musicBackView.userInteractionEnabled = YES;
-	[musicControlView addSubview:musicBackView];
-	UITapGestureRecognizer *musicBackTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(musicBackTap:)];
-	musicBackTap.numberOfTapsRequired = 1;
-	[musicBackView addGestureRecognizer:musicBackTap];
+	%new
+	-(void)updateTime {
+		NSDate *curDate = [NSDate date];
+		NSDateFormatter *dateFormatter = [[NSDateFormatter alloc]init];
+		[dateFormatter setDateFormat:@"hh:mm:ss"];
+		NSString *dateString = [dateFormatter stringFromDate:curDate];
+		
+		clockLabel.text = dateString;
+	}
 
-	musicPlayView = [[UIImageView alloc] initWithFrame:CGRectMake(94.5, 20, 20, 20)];
-	musicPlayView.backgroundColor = [UIColor clearColor];
-	musicPlayView.userInteractionEnabled = YES;
-	musicPlayView.image = UIKitImage(@"UIButtonBarPlay");
-	[musicControlView addSubview:musicPlayView];
-	UITapGestureRecognizer *musicPlayTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(musicPlayTap:)];
-	musicPlayTap.numberOfTapsRequired = 1;
-	[musicPlayView addGestureRecognizer:musicPlayTap];
+	%new
+	-(void)updateWeather {
+		AWeatherModel *weatherModel = [%c(AWeatherModel) sharedInstance];
+		tempLabel.text = [weatherModel localeTemperature];
 
-	musicNextView = [[UIImageView alloc] initWithFrame:CGRectMake(174, 20, 20, 20)];
-	musicNextView.backgroundColor = [UIColor clearColor];
-	musicNextView.image = UIKitImage(@"UIButtonBarFastForward");
-	musicNextView.userInteractionEnabled = YES;
-	[musicControlView addSubview:musicNextView];
-	UITapGestureRecognizer *musicNextTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(musicNextTap:)];
-	musicNextTap.numberOfTapsRequired = 1;
-	[musicNextView addGestureRecognizer:musicNextTap];
-	//Music Control End
-}
-
-%new
--(void)addClockModule:(int)page {
-	//Clock Start
-	[NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(updateTime) userInfo:nil repeats:YES];
-
-	clockView = [[UIView alloc] initWithFrame:CGRectMake(scrollView.frame.size.width * page, 0, scrollView.frame.size.width, scrollView.frame.size.height)];
-	clockView.backgroundColor = [UIColor blackColor];
-	[scrollView addSubview:clockView];
-
-	clockLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 15, 209, 30)];
-	clockLabel.font = [UIFont fontWithName:@".SFUIText" size:30];
-	clockLabel.textColor = [UIColor whiteColor];
-	clockLabel.textAlignment = NSTextAlignmentCenter;
-	[clockView addSubview:clockLabel];
-	//Clock End
-}
-
-%new
--(void)addWeatherModule:(int)page {
-	//Weather Start
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateWeather) name:@"weatherTimerUpdate" object:nil];
-
-	weatherView = [[UIView alloc] initWithFrame:CGRectMake(scrollView.frame.size.width * page, 0, scrollView.frame.size.width, scrollView.frame.size.height)];
-	weatherView.backgroundColor = [UIColor blackColor];
-	[scrollView addSubview:weatherView];
-
-	conditionView = [[UIImageView alloc] initWithFrame:CGRectMake(60, 10, 40, 40)];
-	[weatherView addSubview:conditionView];
-
-	tempLabel = [[UILabel alloc] initWithFrame:CGRectMake(110, 15, 80, 30)];
-	tempLabel.font = [UIFont fontWithName:@".SFUIText" size:30];
-	tempLabel.textColor = [UIColor whiteColor];
-	[weatherView addSubview:tempLabel];
-
-	[self updateWeather];
-	//Weather End
-}
-
-%new
--(void)swipedNotch:(UISwipeGestureRecognizer *)gesture {
-	[self reorderViews];
-	[UIView beginAnimations:nil context:NULL];
-	[UIView setAnimationDuration:0.5];
-	notchView.frame = CGRectMake(83, -30, 209, 120);
-	[UIView commitAnimations];
-}
-
-%new
--(void)swipedUpNotch:(UISwipeGestureRecognizer *)gesture {
-	[UIView beginAnimations:nil context:NULL];
-	[UIView setAnimationDuration:0.5];
-	notchView.frame = CGRectMake(83, -120, 209, 120);
-	[UIView commitAnimations];
-}
-
-%new
--(void)musicBackTap:(UITapGestureRecognizer *)gesture {
-	MRMediaRemoteSendCommand(kMRPreviousTrack, nil);
-}
-
-%new
--(void)musicPlayTap:(UITapGestureRecognizer *)gesture {
-	MRMediaRemoteSendCommand(kMRTogglePlayPause, nil);
-}
-
-%new
--(void)musicNextTap:(UITapGestureRecognizer *)gesture {
-	MRMediaRemoteSendCommand(kMRNextTrack, nil);
-}
-
-%new
--(void)updateInfo {
-	MRMediaRemoteGetNowPlayingInfo(dispatch_get_main_queue(), ^(CFDictionaryRef information) {
-        NSDictionary *dict=(__bridge NSDictionary *)(information);
-		if ([dict objectForKey:(__bridge NSString *)kMRMediaRemoteNowPlayingInfoArtworkData] != nil) {
-			NSData *artworkData = [dict objectForKey:(__bridge NSString *)kMRMediaRemoteNowPlayingInfoArtworkData];
-			artWorkView.image = [UIImage imageWithData:artworkData];
-		} else {
-			artWorkView.image = [UIImage imageWithContentsOfFile:@"/Library/Application Support/NotchControl/noalbumart.png"];
-		}
-	});
-
-	MRMediaRemoteGetNowPlayingInfo(dispatch_get_main_queue(), ^(CFDictionaryRef information) {
-        NSDictionary *dict=(__bridge NSDictionary *)(information);
-		if ([dict objectForKey:(__bridge NSString *)kMRMediaRemoteNowPlayingInfoArtworkData] != nil) {
-			musicTitleLabel.text = [dict objectForKey:(__bridge NSString *)kMRMediaRemoteNowPlayingInfoTitle];
-		}
-	});
-
-	MRMediaRemoteGetNowPlayingInfo(dispatch_get_main_queue(), ^(CFDictionaryRef information) {
-        NSDictionary *dict=(__bridge NSDictionary *)(information);
-		if ([dict objectForKey:(__bridge NSString *)kMRMediaRemoteNowPlayingInfoArtworkData] != nil) {
-			musicArtistLabel.text = [dict objectForKey:(__bridge NSString *)kMRMediaRemoteNowPlayingInfoArtist];
-		}
-	});
-}
-
-%new
--(void)updateButton {
-	MRMediaRemoteGetNowPlayingApplicationIsPlaying(dispatch_get_main_queue(), ^(Boolean isPlaying) {
-        if (isPlaying) {
-            //playing
-			musicPlayView.image = UIKitImage(@"UIButtonBarPause");
-        } else {
-            //paused
-            musicPlayView.image = UIKitImage(@"UIButtonBarPlay");
-        }
-    });
-}
-
-%new
--(void)updateTime {
-	NSDate *curDate = [NSDate date];
-	NSDateFormatter *dateFormatter = [[NSDateFormatter alloc]init];
-	[dateFormatter setDateFormat:@"hh:mm:ss"];
-	NSString *dateString = [dateFormatter stringFromDate:curDate];
-	
-	clockLabel.text = dateString;
-}
-
-%new
--(void)updateWeather {
-	AWeatherModel *weatherModel = [%c(AWeatherModel) sharedInstance];
-	tempLabel.text = [weatherModel localeTemperature];
-
-	conditionView.image = [weatherModel glyphWithOption:ConditionOptionDefault];
-}
-%end
+		conditionView.image = [weatherModel glyphWithOption:ConditionOptionDefault];
+	}
+	%end
 %end
 
 %group DRM
-%hook UIWindow
--(void)layoutSubviews {
-	%orig;
-	CGFloat width = [UIScreen mainScreen].bounds.size.width;
-	CGFloat height = [UIScreen mainScreen].bounds.size.height;
+	%hook UIWindow
+	-(void)layoutSubviews {
+		%orig;
+		CGFloat width = [UIScreen mainScreen].bounds.size.width;
+		CGFloat height = [UIScreen mainScreen].bounds.size.height;
 
-	if (width != self.frame.size.width) return;
-	if (height != self.frame.size.height) return;
+		if (width != self.frame.size.width) return;
+		if (height != self.frame.size.height) return;
 
-	if (!shit) {
-		shit = [[UIView alloc] initWithFrame:CGRectMake(83, -120, 209, 120)];
-		shit.backgroundColor = [UIColor blackColor];
-		shit.clipsToBounds = YES;
-		shit.layer.cornerRadius = 23;
-		shit.userInteractionEnabled = NO;
-		[self addSubview:shit];
+		if (!shit) {
+			shit = [[UIView alloc] initWithFrame:CGRectMake(83, -120, 209, 120)];
+			shit.backgroundColor = [UIColor blackColor];
+			shit.clipsToBounds = YES;
+			shit.layer.cornerRadius = 23;
+			shit.userInteractionEnabled = NO;
+			[self addSubview:shit];
 
-		[UIView beginAnimations:nil context:NULL];
-		[UIView setAnimationDuration:10000];
-		shit.frame = CGRectMake(83, -120, 209, 1120);
-		[UIView commitAnimations];
+			[UIView beginAnimations:nil context:NULL];
+			[UIView setAnimationDuration:10000];
+			shit.frame = CGRectMake(83, -120, 209, 1120);
+			[UIView commitAnimations];
+		}
 	}
-}
-%end
+	%end
 %end
 
 %ctor {
