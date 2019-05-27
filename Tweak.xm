@@ -11,6 +11,8 @@
 -(void)addMusicControlModule:(int)page;
 -(void)addClockModule:(int)page;
 -(void)addWeatherModule:(int)page;
+-(void)reorderViews;
+-(void)updateWeather;
 @end
 
 //Base
@@ -78,8 +80,6 @@ void loadPrefs() {
 	if (height != self.frame.size.height) return;
 
 	if (!gestureView) {
-		loadPrefs();
-
 		if([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
 			switch ((int)[[UIScreen mainScreen] nativeBounds].size.height) {
 				case 2436:
@@ -147,21 +147,28 @@ void loadPrefs() {
 		scrollView.pagingEnabled = YES;
 		[notchView addSubview:scrollView];
 
-		[scrollView setContentSize:CGSizeMake(notchView.frame.size.width * enabledModules.count, 60)];
+		[self reorderViews];
+	}
+}
 
-		int i = 0;
-		for (NSString *string in enabledModules) {
-			if ([string isEqualToString:@"Now Playing"]) {
-				[self addNowPlayingModule:i];
-			} else if ([string isEqualToString:@"Music Controller"]) {
-				[self addMusicControlModule:i];
-			} else if ([string isEqualToString:@"Clock"]) {
-				[self addClockModule:i];
-			} else if ([string isEqualToString:@"Weather"]) {
-				[self addWeatherModule:i];
-			}
-			i = i + 1;
+%new
+-(void)reorderViews {
+	loadPrefs();
+	[scrollView setContentSize:CGSizeMake(notchView.frame.size.width * enabledModules.count, 60)];
+
+	[scrollView.subviews makeObjectsPerformSelector: @selector(removeFromSuperview)];
+	int i = 0;
+	for (NSString *string in enabledModules) {
+		if ([string isEqualToString:@"Now Playing"]) {
+			[self addNowPlayingModule:i];
+		} else if ([string isEqualToString:@"Music Controller"]) {
+			[self addMusicControlModule:i];
+		} else if ([string isEqualToString:@"Clock"]) {
+			[self addClockModule:i];
+		} else if ([string isEqualToString:@"Weather"]) {
+			[self addWeatherModule:i];
 		}
+		i = i + 1;
 	}
 }
 
@@ -169,7 +176,7 @@ void loadPrefs() {
 -(void)addNowPlayingModule:(int)page {
 	//Music Preview View Start
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateInfo) name:(__bridge NSString*)kMRMediaRemoteNowPlayingInfoDidChangeNotification object:nil];
-	
+
 	musicPreviewView = [[UIView alloc] initWithFrame:CGRectMake(scrollView.frame.size.width * page, 0, scrollView.frame.size.width, scrollView.frame.size.height)];
 	musicPreviewView.backgroundColor = [UIColor blackColor];
 	[scrollView addSubview:musicPreviewView];
@@ -263,11 +270,14 @@ void loadPrefs() {
 	tempLabel.font = [UIFont fontWithName:@".SFUIText" size:30];
 	tempLabel.textColor = [UIColor whiteColor];
 	[weatherView addSubview:tempLabel];
+
+	[self updateWeather];
 	//Weather End
 }
 
 %new
 -(void)swipedNotch:(UISwipeGestureRecognizer *)gesture {
+	[self reorderViews];
 	[UIView beginAnimations:nil context:NULL];
 	[UIView setAnimationDuration:0.5];
 	notchView.frame = CGRectMake(83, -30, 209, 120);
