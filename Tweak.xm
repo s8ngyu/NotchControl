@@ -79,10 +79,6 @@ void loadPrefs() {
 
 	if (!gestureView) {
 		loadPrefs();
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateInfo) name:(__bridge NSString*)kMRMediaRemoteNowPlayingInfoDidChangeNotification object:nil];
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateButton) name:(__bridge NSString*)kMRMediaRemoteNowPlayingApplicationIsPlayingDidChangeNotification object:nil];
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateWeather) name:@"weatherTimerUpdate" object:nil];
-		[NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(updateTime) userInfo:nil repeats:YES];
 
 		if([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
 			switch ((int)[[UIScreen mainScreen] nativeBounds].size.height) {
@@ -172,6 +168,8 @@ void loadPrefs() {
 %new
 -(void)addNowPlayingModule:(int)page {
 	//Music Preview View Start
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateInfo) name:(__bridge NSString*)kMRMediaRemoteNowPlayingInfoDidChangeNotification object:nil];
+	
 	musicPreviewView = [[UIView alloc] initWithFrame:CGRectMake(scrollView.frame.size.width * page, 0, scrollView.frame.size.width, scrollView.frame.size.height)];
 	musicPreviewView.backgroundColor = [UIColor blackColor];
 	[scrollView addSubview:musicPreviewView];
@@ -197,6 +195,8 @@ void loadPrefs() {
 %new
 -(void)addMusicControlModule:(int)page {
 	//Music Control Start
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateButton) name:(__bridge NSString*)kMRMediaRemoteNowPlayingApplicationIsPlayingDidChangeNotification object:nil];
+
 	musicControlView = [[UIView alloc] initWithFrame:CGRectMake(scrollView.frame.size.width * page, 0, scrollView.frame.size.width, scrollView.frame.size.height)];
 	musicControlView.backgroundColor = [UIColor blackColor];
 	[scrollView addSubview:musicControlView];
@@ -233,6 +233,8 @@ void loadPrefs() {
 %new
 -(void)addClockModule:(int)page {
 	//Clock Start
+	[NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(updateTime) userInfo:nil repeats:YES];
+
 	clockView = [[UIView alloc] initWithFrame:CGRectMake(scrollView.frame.size.width * page, 0, scrollView.frame.size.width, scrollView.frame.size.height)];
 	clockView.backgroundColor = [UIColor blackColor];
 	[scrollView addSubview:clockView];
@@ -248,6 +250,8 @@ void loadPrefs() {
 %new
 -(void)addWeatherModule:(int)page {
 	//Weather Start
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateWeather) name:@"weatherTimerUpdate" object:nil];
+
 	weatherView = [[UIView alloc] initWithFrame:CGRectMake(scrollView.frame.size.width * page, 0, scrollView.frame.size.width, scrollView.frame.size.height)];
 	weatherView.backgroundColor = [UIColor blackColor];
 	[scrollView addSubview:weatherView];
