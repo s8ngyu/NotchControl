@@ -155,52 +155,14 @@ void loadPrefs() {
 
 		int i = 0;
 		for (NSString *string in enabledModules) {
-			if (i == 0) {
-				if ([string isEqualToString:@"Now Playing"]) {
-					[self addNowPlayingModule:i];
-				} else if ([string isEqualToString:@"Music Controller"]) {
-					[self addMusicControlModule:i];
-				} else if ([string isEqualToString:@"Clock"]) {
-					[self addClockModule:i];
-				} else if ([string isEqualToString:@"Weather"]) {
-					[self addWeatherModule:i];
-				}
-			}
-
-			if (i == 1) {
-				if ([string isEqualToString:@"Now Playing"]) {
-					[self addNowPlayingModule:i];
-				} else if ([string isEqualToString:@"Music Controller"]) {
-					[self addMusicControlModule:i];
-				} else if ([string isEqualToString:@"Clock"]) {
-					[self addClockModule:i];
-				} else if ([string isEqualToString:@"Weather"]) {
-					[self addWeatherModule:i];
-				}
-			}
-
-			if (i == 2) {
-				if ([string isEqualToString:@"Now Playing"]) {
-					[self addNowPlayingModule:i];
-				} else if ([string isEqualToString:@"Music Controller"]) {
-					[self addMusicControlModule:i];
-				} else if ([string isEqualToString:@"Clock"]) {
-					[self addClockModule:i];
-				} else if ([string isEqualToString:@"Weather"]) {
-					[self addWeatherModule:i];
-				}
-			}
-
-			if (i == 3) {
-				if ([string isEqualToString:@"Now Playing"]) {
-					[self addNowPlayingModule:i];
-				} else if ([string isEqualToString:@"Music Controller"]) {
-					[self addMusicControlModule:i];
-				} else if ([string isEqualToString:@"Clock"]) {
-					[self addClockModule:i];
-				} else if ([string isEqualToString:@"Weather"]) {
-					[self addWeatherModule:i];
-				}
+			if ([string isEqualToString:@"Now Playing"]) {
+				[self addNowPlayingModule:i];
+			} else if ([string isEqualToString:@"Music Controller"]) {
+				[self addMusicControlModule:i];
+			} else if ([string isEqualToString:@"Clock"]) {
+				[self addClockModule:i];
+			} else if ([string isEqualToString:@"Weather"]) {
+				[self addWeatherModule:i];
 			}
 			i = i + 1;
 		}
