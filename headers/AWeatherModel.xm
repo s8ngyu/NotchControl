@@ -77,7 +77,7 @@
 -(void)setUpRefreshTimer{
     // Creating a refresh timer
     if(!self.refreshTimer){
-        self.refreshTimer = [NSTimer scheduledTimerWithTimeInterval:900
+        self.refreshTimer = [NSTimer scheduledTimerWithTimeInterval:600
                                                              target:self
                                                            selector:@selector(updateWeather:)
                                                            userInfo:nil
