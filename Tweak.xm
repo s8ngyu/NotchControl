@@ -323,20 +323,8 @@ void loadPrefs() {
 			} else {
 				artWorkView.image = [UIImage imageWithContentsOfFile:@"/Library/Application Support/NotchControl/noalbumart.png"];
 			}
-		});
-
-		MRMediaRemoteGetNowPlayingInfo(dispatch_get_main_queue(), ^(CFDictionaryRef information) {
-			NSDictionary *dict=(__bridge NSDictionary *)(information);
-			if ([dict objectForKey:(__bridge NSString *)kMRMediaRemoteNowPlayingInfoArtworkData] != nil) {
-				musicTitleLabel.text = [dict objectForKey:(__bridge NSString *)kMRMediaRemoteNowPlayingInfoTitle];
-			}
-		});
-
-		MRMediaRemoteGetNowPlayingInfo(dispatch_get_main_queue(), ^(CFDictionaryRef information) {
-			NSDictionary *dict=(__bridge NSDictionary *)(information);
-			if ([dict objectForKey:(__bridge NSString *)kMRMediaRemoteNowPlayingInfoArtworkData] != nil) {
-				musicArtistLabel.text = [dict objectForKey:(__bridge NSString *)kMRMediaRemoteNowPlayingInfoArtist];
-			}
+			musicTitleLabel.text = [dict objectForKey:(__bridge NSString *)kMRMediaRemoteNowPlayingInfoTitle];
+			musicArtistLabel.text = [dict objectForKey:(__bridge NSString *)kMRMediaRemoteNowPlayingInfoArtist];
 		});
 	}
 
