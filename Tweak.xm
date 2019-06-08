@@ -195,12 +195,12 @@ void loadPrefs() {
 		artWorkView.layer.cornerRadius = 15;
 		[musicPreviewView addSubview:artWorkView];
 
-		musicTitleLabel = [[MarqueeLabel alloc] initWithFrame:CGRectMake(60, 10, 140, 15) duration:8.0 andFadeLength:10.0f];
+		musicTitleLabel = [[MarqueeLabel alloc] initWithFrame:CGRectMake(62, 10, 138, 15) duration:8.0 andFadeLength:10.0f];
 		musicTitleLabel.font = [UIFont fontWithName:@".SFUIText-Bold" size:15];
 		musicTitleLabel.textColor = [UIColor whiteColor];
 		[musicPreviewView addSubview:musicTitleLabel];
 
-		musicArtistLabel = [[MarqueeLabel alloc] initWithFrame:CGRectMake(60, 30, 140, 15) duration:8.0 andFadeLength:10.0f];
+		musicArtistLabel = [[MarqueeLabel alloc] initWithFrame:CGRectMake(62, 30, 138, 15) duration:8.0 andFadeLength:10.0f];
 		musicArtistLabel.font = [UIFont fontWithName:@".SFUIText" size:15];
 		musicArtistLabel.textColor = [UIColor whiteColor];
 		[musicPreviewView addSubview:musicArtistLabel];
