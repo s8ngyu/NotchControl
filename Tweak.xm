@@ -102,7 +102,7 @@ void loadPrefs() {
 
 					case 1792:
 						//XR
-						gestureView = [[UIView alloc] initWithFrame:CGRectMake(100, -30, 209, 65)]; //Size for iPXS Max
+						gestureView = [[UIView alloc] initWithFrame:CGRectMake(100, -30, 209, 65)]; //Size for iPXR
 
 					default:
 						printf("Unknown");
@@ -133,7 +133,7 @@ void loadPrefs() {
 
 					case 1792:
 						//XR
-						notchView = [[UIView alloc] initWithFrame:CGRectMake(100, -120, 209, 120)]; //Size for iPXS Max
+						notchView = [[UIView alloc] initWithFrame:CGRectMake(100, -120, 209, 120)]; //Size for iPXR
 
 					default:
 						printf("Unknown");
