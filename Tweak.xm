@@ -23,7 +23,6 @@ UIView *gestureView;
 UIView *notchView;
 UIScrollView *scrollView;
 NSMutableArray *enabledModules;
-int ncInit = 0;
 
 //Music Preview View
 UIView *musicPreviewView;
@@ -83,10 +82,10 @@ void loadPrefs() {
 		if (width != self.frame.size.width) return;
 		if (height != self.frame.size.height) return;
 
-		if (ncInit == 0) {
+		if (!gestureView) {
 			[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateInfo) name:(__bridge NSString*)kMRMediaRemoteNowPlayingInfoDidChangeNotification object:nil];
 			[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateButton) name:(__bridge NSString*)kMRMediaRemoteNowPlayingApplicationIsPlayingDidChangeNotification object:nil];
-			[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateWeather) name:@"weatherTimerUpdate" object:nil];
+			[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateWeather) name:@"NotchControlWeatherUpdate" object:nil];
 			[NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(updateTime) userInfo:nil repeats:YES];
 
 			if([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
@@ -157,7 +156,6 @@ void loadPrefs() {
 			[notchView addSubview:scrollView];
 
 			[self reorderViews];
-			ncInit = 1;
 		}
 	}
 
