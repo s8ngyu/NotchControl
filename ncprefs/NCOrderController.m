@@ -13,8 +13,9 @@
         [_tableView setAllowsSelection:YES];
         [_tableView setAllowsMultipleSelection:NO];
         
-        if ([self respondsToSelector:@selector(setView:)])
-            [self performSelectorOnMainThread:@selector(setView:) withObject:_tableView waitUntilDone:YES];        
+        if ([self respondsToSelector:@selector(setView:)]) {
+            [self performSelectorOnMainThread:@selector(setView:) withObject:_tableView waitUntilDone:YES];
+        }
     }
 
     return self;

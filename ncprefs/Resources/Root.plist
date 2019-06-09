@@ -5,6 +5,30 @@
 	<key>items</key>
 	<array>
 		<dict>
+			<key>cellClass</key>
+			<string>HBTwitterCell</string>
+			<key>label</key>
+			<string>PeterDev</string>
+			<key>user</key>
+			<string>iospeterdev</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSSwitchCell</string>
+			<key>default</key>
+			<true/>
+			<key>defaults</key>
+			<string>com.peterdev.notchcontrol</string>
+			<key>label</key>
+			<string>Enabled</string>
+			<key>key</key>
+			<string>kEnabled</string>
+			<key>alternateColors</key>
+			<true/>
+			<key>PostNotification</key>
+			<string>com.peterdev.notchcontrol/settingschanged</string>
+		</dict>
+		<dict>
 			<key>cell</key>
 			<string>PSGroupCell</string>
 			<key>label</key>
@@ -19,6 +43,65 @@
 			<true/>
 			<key>label</key>
 			<string>Modules</string>
+		</dict>
+
+		<!-- Credits -->
+		<dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+			<key>footerText</key>
+			<string>NotchControl by PeterDev</string>
+			<key>isStaticText</key>
+			<true/>
+		</dict>
+		<dict>
+			<key>action</key>
+			<string>respring:</string>
+			<key>cell</key>
+			<string>PSButtonCell</string>
+			<key>label</key>
+			<string>Respring</string>
+		</dict>
+		<dict>
+			<key>action</key>
+			<string>resetPrefs:</string>
+			<key>cell</key>
+			<string>PSButtonCell</string>
+			<key>isDestructive</key>
+			<true/>
+			<key>confirmation</key>
+			<dict>
+				<key>prompt</key>
+				<string>Are you sure to restore default settings?</string>
+				<key>title</key>
+				<string>Okay</string>
+				<key>okTitle</key>
+				<string>Okay</string>
+				<key>cancelTitle</key>
+				<string>Cancel</string>
+			</dict>
+			<key>label</key>
+			<string>Restore default settings and respring</string>
+		</dict>
+		<dict>
+			<key>cellClass</key>
+			<string>HBLinkTableCell</string>
+			<key>label</key>
+			<string>Github</string>
+			<key>subtitle</key>
+			<string>Source code</string>
+			<key>url</key>
+			<string>https://github.com/peterprd/NotchControl</string>
+		</dict>
+		<dict>
+			<key>cellClass</key>
+			<string>HBLinkTableCell</string>
+			<key>label</key>
+			<string>Donate to PeterDev</string>
+			<key>subtitle</key>
+			<string>Support me!</string>
+			<key>url</key>
+			<string>https://paypal.me/peterdev</string>
 		</dict>
 	</array>
 	<key>title</key>

@@ -24,22 +24,25 @@
 
 - (void)viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
-
-    CGRect frame = self.table.bounds;
-    frame.origin.y = -frame.size.height;
-	
-    [self.navigationController.navigationController.navigationBar setShadowImage: [UIImage new]];
     self.navigationController.navigationController.navigationBar.translucent = YES;
 }
 
 - (void)respring:(id)sender {
-	pid_t pid;
-    const char* args[] = {"killall", "backboardd", NULL};
-    posix_spawn(&pid, "/usr/bin/killall", NULL, NULL, (char* const*)args, NULL);
+	if ([[NSFileManager defaultManager] fileExistsAtPath:@"/usr/bin/sbreload"]) {
+        //sbreload
+        pid_t pid;
+        const char* args[] = {"sbreload", NULL};
+        posix_spawn(&pid, "/usr/bin/sbreload", NULL, NULL, (char* const*)args, NULL);
+    } else {
+        //common respring
+        pid_t pid;
+        const char* args[] = {"killall", "backboardd", NULL};
+        posix_spawn(&pid, "/usr/bin/killall", NULL, NULL, (char* const*)args, NULL);
+    }
 }
 
 - (void)resetPrefs:(id)sender {
-    HBPreferences *prefs = [[HBPreferences alloc] initWithIdentifier:@"com.peterdev.xeon"];
+    HBPreferences *prefs = [[HBPreferences alloc] initWithIdentifier:@"com.peterdev.notchcontrol"];
     [prefs removeAllObjects];
 
     [self respring:sender];
