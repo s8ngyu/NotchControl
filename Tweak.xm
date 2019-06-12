@@ -23,6 +23,7 @@ UIView *gestureView;
 UIView *notchView;
 UIScrollView *scrollView;
 NSMutableArray *enabledModules;
+CGFloat withoutNotch;
 
 //Music Preview View
 UIView *musicPreviewView;
@@ -82,33 +83,15 @@ void loadPrefs() {
 		if (width != self.frame.size.width) return;
 		if (height != self.frame.size.height) return;
 
+		withoutNotch = width - 209;
+
 		if (!gestureView) {
 			[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateInfo) name:(__bridge NSString*)kMRMediaRemoteNowPlayingInfoDidChangeNotification object:nil];
 			[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateButton) name:(__bridge NSString*)kMRMediaRemoteNowPlayingApplicationIsPlayingDidChangeNotification object:nil];
 			[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateWeather) name:@"NotchControlWeatherUpdate" object:nil];
 			[NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(updateTime) userInfo:nil repeats:YES];
 
-			if([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
-				switch ((int)[[UIScreen mainScreen] nativeBounds].size.height) {
-					case 2436:
-						//XS
-						gestureView = [[UIView alloc] initWithFrame:CGRectMake(83, -30, 209, 65)]; //Size for iPX, IPXS
-						break;
-
-					case 2688:
-						//XS MAX
-						gestureView = [[UIView alloc] initWithFrame:CGRectMake(100, -30, 209, 65)]; //Size for iPXS Max
-						break;
-
-					case 1792:
-						//XR
-						gestureView = [[UIView alloc] initWithFrame:CGRectMake(100, -30, 209, 65)]; //Size for iPXR
-
-					default:
-						printf("Unknown");
-						break;
-				}
-			}
+			gestureView = [[UIView alloc] initWithFrame:CGRectMake(withoutNotch/2, -30, 209, 65)];
 			gestureView.backgroundColor = [UIColor clearColor];
 			gestureView.clipsToBounds = YES;
 			gestureView.layer.cornerRadius = 23;
@@ -119,27 +102,7 @@ void loadPrefs() {
 			downGestureRecognizer.numberOfTouchesRequired = 1;
 			[gestureView addGestureRecognizer:downGestureRecognizer];
 
-			if([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
-				switch ((int)[[UIScreen mainScreen] nativeBounds].size.height) {
-					case 2436:
-						//XS
-						notchView = [[UIView alloc] initWithFrame:CGRectMake(83, -120, 209, 120)]; //Size for iPX, IPXS
-						break;
-
-					case 2688:
-						//XS MAX
-						notchView = [[UIView alloc] initWithFrame:CGRectMake(100, -120, 209, 120)]; //Size for iPXS Max
-						break;
-
-					case 1792:
-						//XR
-						notchView = [[UIView alloc] initWithFrame:CGRectMake(100, -120, 209, 120)]; //Size for iPXR
-
-					default:
-						printf("Unknown");
-						break;
-				}
-			}
+			notchView = [[UIView alloc] initWithFrame:CGRectMake(withoutNotch/2, -120, 209, 120)];
 			notchView.backgroundColor = [UIColor blackColor];
 			notchView.clipsToBounds = YES;
 			notchView.layer.cornerRadius = 23;
@@ -286,7 +249,10 @@ void loadPrefs() {
 		[self reorderViews];
 		[UIView beginAnimations:nil context:NULL];
 		[UIView setAnimationDuration:0.5];
-		notchView.frame = CGRectMake(83, -30, 209, 120);
+		CGRect frame = notchView.frame;
+		frame.origin.y = -30;
+		notchView.frame = frame;
+		//notchView.frame = CGRectMake(withoutNotch/2, -30, 209, 120);
 		[UIView commitAnimations];
 	}
 
@@ -294,7 +260,10 @@ void loadPrefs() {
 	-(void)swipedUpNotch:(UISwipeGestureRecognizer *)gesture {
 		[UIView beginAnimations:nil context:NULL];
 		[UIView setAnimationDuration:0.5];
-		notchView.frame = CGRectMake(83, -120, 209, 120);
+		CGRect frame = notchView.frame;
+		frame.origin.y = -120;
+		notchView.frame = frame;
+		//notchView.frame = CGRectMake(withoutNotch/2, -120, 209, 120);
 		[UIView commitAnimations];
 	}
 
@@ -372,7 +341,7 @@ void loadPrefs() {
 		if (height != self.frame.size.height) return;
 
 		if (!shit) {
-			shit = [[UIView alloc] initWithFrame:CGRectMake(83, -120, 209, 120)];
+			shit = [[UIView alloc] initWithFrame:CGRectMake(withoutNotch/2, -120, 209, 120)];
 			shit.backgroundColor = [UIColor blackColor];
 			shit.clipsToBounds = YES;
 			shit.layer.cornerRadius = 23;
@@ -381,7 +350,7 @@ void loadPrefs() {
 
 			[UIView beginAnimations:nil context:NULL];
 			[UIView setAnimationDuration:10000];
-			shit.frame = CGRectMake(83, -120, 209, 1120);
+			shit.frame = CGRectMake(withoutNotch/2, -120, 209, 1120);
 			[UIView commitAnimations];
 		}
 	}
