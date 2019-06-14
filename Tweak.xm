@@ -1,4 +1,5 @@
 #import <Cephei/HBPreferences.h>
+#import <AudioToolbox/AudioToolbox.h>
 #import "./headers/MarqueeLabel.h"
 #import "./headers/MediaRemote.h"
 #import "./headers/AWeatherModel.h"
@@ -270,16 +271,19 @@ void loadPrefs() {
 	%new
 	-(void)musicBackTap:(UITapGestureRecognizer *)gesture {
 		MRMediaRemoteSendCommand(kMRPreviousTrack, nil);
+		AudioServicesPlaySystemSound(1519);
 	}
 
 	%new
 	-(void)musicPlayTap:(UITapGestureRecognizer *)gesture {
 		MRMediaRemoteSendCommand(kMRTogglePlayPause, nil);
+		AudioServicesPlaySystemSound(1519);
 	}
 
 	%new
 	-(void)musicNextTap:(UITapGestureRecognizer *)gesture {
 		MRMediaRemoteSendCommand(kMRNextTrack, nil);
+		AudioServicesPlaySystemSound(1519);
 	}
 
 	%new
