@@ -27,6 +27,7 @@
 
 - (void)viewWillAppear:(BOOL)animated {
     self.navigationItem.title = @"Modules";
+    [self checkModules];
 }
 
 - (void)dealloc { 
@@ -107,6 +108,36 @@
         return allData;
     }
     return allData;
+}
+
+-(NSArray *)allModulesInSetting {
+    NSArray *allData = [self.loadEnabledModules arrayByAddingObjectsFromArray:self.loadDisabledModules];
+
+    return allData;
+}
+
+-(void)checkModules {
+    HBPreferences *file = [[HBPreferences alloc] initWithIdentifier:@"com.peterdev.notchcontrol"];
+    NSMutableArray *allData = [[file objectForKey:@"kDisabledModules"] mutableCopy];
+
+    if (![self.allModulesInSetting containsObject:@"Now Playing"]) {
+        [allData addObject:@"Now Playing"];
+    }
+
+    if (![self.allModulesInSetting containsObject:@"Music Controller"]) {
+        [allData addObject:@"Music Controller"];
+    }
+
+    if (![self.allModulesInSetting containsObject:@"Clock"]) {
+        [allData addObject:@"Clock"];
+    }
+
+    if (![self.allModulesInSetting containsObject:@"Weather"]) {
+        [allData addObject:@"Weather"];
+    }
+
+    [file setObject:allData forKey:@"kDisabledModules"];
+    [_tableView reloadData];
 }
 
 - (NSInteger) numberOfSectionsInTableView:(UITableView *)tableView {
