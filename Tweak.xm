@@ -253,7 +253,6 @@ void loadPrefs() {
 		CGRect frame = notchView.frame;
 		frame.origin.y = -30;
 		notchView.frame = frame;
-		//notchView.frame = CGRectMake(withoutNotch/2, -30, 209, 120);
 		[UIView commitAnimations];
 	}
 
@@ -264,7 +263,6 @@ void loadPrefs() {
 		CGRect frame = notchView.frame;
 		frame.origin.y = -120;
 		notchView.frame = frame;
-		//notchView.frame = CGRectMake(withoutNotch/2, -120, 209, 120);
 		[UIView commitAnimations];
 	}
 
