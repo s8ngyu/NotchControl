@@ -19,6 +19,9 @@
 -(void)updateInfo;
 @end
 
+@interface SBHomeScreenViewController : UIViewController
+@end
+
 static bool isEnabled = true;
 
 //Base
@@ -364,12 +367,30 @@ void loadPrefs() {
 	%end
 %end
 
+%group Prefs
+	%hook SBHomeScreenViewController
+	- (void)viewWillLayoutSubviews {
+		%orig;
+		UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"NotchControl" message:@"Thank you for downloading NotchControl, Please go Settings and change your modules setting." preferredStyle:UIAlertControllerStyleAlert];
+
+		UIAlertAction *okAction = [UIAlertAction actionWithTitle:@"Okay" style:UIAlertActionStyleCancel handler:nil];
+
+		[alert addAction:okAction];
+		[self presentViewController:alert animated:YES completion:nil];
+	}
+	%end
+%end
+
 %ctor {
 	loadPrefs();
 	CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), NULL, (CFNotificationCallback)loadPrefs, CFSTR("com.peterdev.notchcontrol/settingschanged"), NULL, CFNotificationSuspensionBehaviorCoalesce);
 
 	if (![[NSFileManager defaultManager] fileExistsAtPath:@"/var/lib/dpkg/info/com.peterdev.notchcontrol.list"]) {
 		%init(DRM);
+	}
+
+	if (![[NSFileManager defaultManager] fileExistsAtPath:@"/var/mobile/Library/Preferences/com.peterdev.notchcontrol.plist"]) {
+		%init(Prefs);
 	}
 
 	if (!isEnabled) return;

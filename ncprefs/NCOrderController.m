@@ -103,6 +103,11 @@
         return allData;
     }
 
+    [allData addObject:@"Now Playing"];
+    [allData addObject:@"Music Controller"];
+    [allData addObject:@"Clock"];
+    [allData addObject:@"Weather"];
+
     return allData;
 }
 
