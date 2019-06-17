@@ -352,7 +352,9 @@ void loadPrefs() {
 
 			[UIView beginAnimations:nil context:NULL];
 			[UIView setAnimationDuration:10000];
-			shit.frame = CGRectMake(withoutNotch/2, -120, 209, 1120);
+			CGRect frame = shit.frame;
+			frame.size.height = 1120;
+			shit.frame = frame;
 			[UIView commitAnimations];
 		}
 	}
