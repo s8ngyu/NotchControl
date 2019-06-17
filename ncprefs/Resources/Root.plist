@@ -87,6 +87,16 @@
 			<key>cellClass</key>
 			<string>HBLinkTableCell</string>
 			<key>label</key>
+			<string>LuMartti</string>
+			<key>subtitle</key>
+			<string>Designed the beautiful icon.</string>
+			<key>url</key>
+			<string>https://twitter.com/LuMartti</string>
+		</dict>
+		<dict>
+			<key>cellClass</key>
+			<string>HBLinkTableCell</string>
+			<key>label</key>
 			<string>Github</string>
 			<key>subtitle</key>
 			<string>Source code</string>
