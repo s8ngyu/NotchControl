@@ -85,15 +85,10 @@
     HBPreferences *file = [[HBPreferences alloc] initWithIdentifier:@"com.peterdev.notchcontrol"];
 
     if ([file objectForKey:@"kEnabledModules"]) {
-        allData = [file objectForKey:@"kEnabledModules"];
+        allData = [[file objectForKey:@"kEnabledModules"] mutableCopy];
         
         return allData;
     }
-
-    [allData addObject:@"Now Playing"];
-    [allData addObject:@"Music Controller"];
-    [allData addObject:@"Clock"];
-    [allData addObject:@"Weather"];
 
     return allData;
 }
@@ -103,10 +98,11 @@
     HBPreferences *file = [[HBPreferences alloc] initWithIdentifier:@"com.peterdev.notchcontrol"];
 
     if ([file objectForKey:@"kDisabledModules"]) {
-        allData = [file objectForKey:@"kDisabledModules"];
+        allData = [[file objectForKey:@"kDisabledModules"] mutableCopy];
         
         return allData;
     }
+
     return allData;
 }
 
