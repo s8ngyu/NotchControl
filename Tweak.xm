@@ -19,6 +19,8 @@
 -(void)updateInfo;
 @end
 
+static bool isEnabled = true;
+
 //Base
 UIView *gestureView;
 UIView *notchView;
@@ -69,8 +71,9 @@ __attribute__((unused)) static UIImage* UIKitImage(NSString* imgName)
 void loadPrefs() {
 	HBPreferences *file = [[HBPreferences alloc] initWithIdentifier:@"com.peterdev.notchcontrol"];
 
-	enabledModules = [[NSMutableArray alloc] init];
-	enabledModules = [file objectForKey:@"kEnabledModules"];
+	isEnabled = [([file objectForKey:@"kEnabled"] ?: @(YES)) boolValue];
+
+	enabledModules = [[file objectForKey:@"kEnabledModules"] mutableCopy];
 	NSLog(@"NotchControl: %@", enabledModules);
 }
 
@@ -369,5 +372,6 @@ void loadPrefs() {
 		%init(DRM);
 	}
 
+	if (!isEnabled) return;
 	%init(NC);
 }
