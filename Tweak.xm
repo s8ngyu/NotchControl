@@ -330,6 +330,7 @@ void loadPrefs() {
 
 	%new
 	-(void)updateWeather {
+		if (!%c(WeatherPreferences)) return;  //Code from Nepeta/Exo
 		AWeatherModel *weatherModel = [%c(AWeatherModel) sharedInstance];
 		tempLabel.text = [weatherModel localeTemperature];
 
