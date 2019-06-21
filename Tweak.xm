@@ -23,10 +23,12 @@
 @end
 
 static bool isEnabled = true;
+static bool isGrabber = false;
 
 //Base
 UIView *gestureView;
 UIView *notchView;
+UIView *pillView;
 UIScrollView *scrollView;
 NSMutableArray *enabledModules;
 CGFloat withoutNotch;
@@ -75,6 +77,7 @@ void loadPrefs() {
 	HBPreferences *file = [[HBPreferences alloc] initWithIdentifier:@"com.peterdev.notchcontrol"];
 
 	isEnabled = [([file objectForKey:@"kEnabled"] ?: @(YES)) boolValue];
+	isGrabber = [([file objectForKey:@"kGrabber"] ?: @(NO)) boolValue];
 
 	enabledModules = [[file objectForKey:@"kEnabledModules"] mutableCopy];
 	NSLog(@"NotchControl: %@", enabledModules);
@@ -110,10 +113,23 @@ void loadPrefs() {
 			[gestureView addGestureRecognizer:downGestureRecognizer];
 
 			notchView = [[UIView alloc] initWithFrame:CGRectMake(withoutNotch/2, -120, 209, 120)];
+			if (isGrabber) {
+				notchView = [[UIView alloc] initWithFrame:CGRectMake(withoutNotch/2, -130, 209, 130)];
+			}
 			notchView.backgroundColor = [UIColor blackColor];
 			notchView.clipsToBounds = YES;
 			notchView.layer.cornerRadius = 23;
 			[self addSubview:notchView];
+
+			if (isGrabber) {
+				int pill = notchView.frame.size.width - 120;
+				pillView = [[UIView alloc] initWithFrame:CGRectMake(pill/2, 122.5, 120, 5)];
+				pillView.backgroundColor = [UIColor whiteColor];
+				pillView.userInteractionEnabled = NO;
+				pillView.clipsToBounds = YES;
+				pillView.layer.cornerRadius = pillView.frame.size.height/2;
+				[notchView addSubview:pillView];
+			}
 
 			UISwipeGestureRecognizer *upGestureRecognizer = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(swipedUpNotch:)];
 			upGestureRecognizer.direction = UISwipeGestureRecognizerDirectionUp;
@@ -268,6 +284,9 @@ void loadPrefs() {
 		[UIView setAnimationDuration:0.5];
 		CGRect frame = notchView.frame;
 		frame.origin.y = -120;
+		if (isGrabber) {
+			frame.origin.y = -130;
+		}
 		notchView.frame = frame;
 		[UIView commitAnimations];
 	}
