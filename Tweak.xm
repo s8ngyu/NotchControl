@@ -7,7 +7,7 @@
 #import "./headers/UIImage+tintColor.h"
 #import "./headers/UIImage+ScaledImage.h"
 
-@interface UIWindow (NotchControl)
+@interface UIWindow (NotchControl) <UIScrollViewDelegate>
 -(void)addNowPlayingModule:(int)page;
 -(void)addMusicControlModule:(int)page;
 -(void)addClockModule:(int)page;
@@ -17,13 +17,16 @@
 -(void)updateButton;
 -(void)updateTime;
 -(void)updateInfo;
+-(void)resetAutoCloserTimer;
 @end
 
 @interface SBHomeScreenViewController : UIViewController
 @end
 
-static bool isEnabled = true;
-static bool isGrabber = false;
+BOOL isEnabled = true;
+BOOL isGrabber = false;
+BOOL isAutoCloser = false;
+int autoCloserTime = 3;
 
 //Base
 UIView *gestureView;
@@ -32,6 +35,7 @@ UIView *pillView;
 UIScrollView *scrollView;
 NSMutableArray *enabledModules;
 CGFloat withoutNotch;
+NSTimer *autoCloserTimer;
 
 //Music Preview View
 UIView *musicPreviewView;
@@ -78,6 +82,8 @@ void loadPrefs() {
 
 	isEnabled = [([file objectForKey:@"kEnabled"] ?: @(YES)) boolValue];
 	isGrabber = [([file objectForKey:@"kGrabber"] ?: @(NO)) boolValue];
+	isAutoCloser = [([file objectForKey:@"kEnableAutoCloser"] ?: @(NO)) boolValue];
+	autoCloserTime = [([file objectForKey:@"kAutoCloseTime"] ?: @(3)) intValue];
 
 	enabledModules = [[file objectForKey:@"kEnabledModules"] mutableCopy];
 	NSLog(@"NotchControl: %@", enabledModules);
@@ -147,6 +153,7 @@ void lockedPostNotification() {
 
 			scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0, 60, notchView.frame.size.width, 60)];
 			scrollView.backgroundColor = [UIColor blackColor];
+			scrollView.delegate = self;
 			scrollView.pagingEnabled = YES;
 			[notchView addSubview:scrollView];
 
@@ -285,6 +292,9 @@ void lockedPostNotification() {
 		frame.origin.y = -30;
 		notchView.frame = frame;
 		[UIView commitAnimations];
+		if (isAutoCloser) {
+			autoCloserTimer = [NSTimer scheduledTimerWithTimeInterval:3 target:self selector:@selector(swipedUpNotch:) userInfo:nil repeats:YES];
+		}
 	}
 
 	%new
@@ -298,24 +308,31 @@ void lockedPostNotification() {
 		}
 		notchView.frame = frame;
 		[UIView commitAnimations];
+		if (isAutoCloser) {
+			[autoCloserTimer invalidate];
+			autoCloserTimer = nil;
+		}
 	}
 
 	%new
 	-(void)musicBackTap:(UITapGestureRecognizer *)gesture {
 		MRMediaRemoteSendCommand(kMRPreviousTrack, nil);
 		AudioServicesPlaySystemSound(1519);
+		[self resetAutoCloserTimer];
 	}
 
 	%new
 	-(void)musicPlayTap:(UITapGestureRecognizer *)gesture {
 		MRMediaRemoteSendCommand(kMRTogglePlayPause, nil);
 		AudioServicesPlaySystemSound(1519);
+		[self resetAutoCloserTimer];
 	}
 
 	%new
 	-(void)musicNextTap:(UITapGestureRecognizer *)gesture {
 		MRMediaRemoteSendCommand(kMRNextTrack, nil);
 		AudioServicesPlaySystemSound(1519);
+		[self resetAutoCloserTimer];
 	}
 
 	%new
@@ -363,6 +380,24 @@ void lockedPostNotification() {
 		tempLabel.text = [weatherModel localeTemperature];
 
 		conditionView.image = [weatherModel glyphWithOption:ConditionOptionDefault];
+	}
+
+	%new
+	-(void)scrollViewDidScroll:(UIScrollView *)sender{
+		[self resetAutoCloserTimer];
+	}
+
+	%new
+	-(void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
+		[self resetAutoCloserTimer];
+	}
+
+	%new
+	-(void)resetAutoCloserTimer {
+		if (isAutoCloser) {
+			[autoCloserTimer invalidate];
+			autoCloserTimer = [NSTimer scheduledTimerWithTimeInterval:3 target:self selector:@selector(swipedUpNotch:) userInfo:nil repeats:YES];
+		}
 	}
 	%end
 
