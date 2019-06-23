@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>items</key>
+	<array>
+		<!-- Settings -->
+		<dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+			<key>footerText</key>
+			<string>Doesn't require respring to apply.</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSSwitchCell</string>
+			<key>default</key>
+			<false/>
+			<key>defaults</key>
+			<string>com.peterdev.notchcontrol</string>
+			<key>label</key>
+			<string>24-Hour Time</string>
+			<key>key</key>
+			<string>kClockTF</string>
+			<key>alternateColors</key>
+			<true/>
+			<key>PostNotification</key>
+			<string>com.peterdev.notchcontrol/settingschanged</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSSwitchCell</string>
+			<key>default</key>
+			<false/>
+			<key>defaults</key>
+			<string>com.peterdev.notchcontrol</string>
+			<key>label</key>
+			<string>Show seconds</string>
+			<key>key</key>
+			<string>kClockSeconds</string>
+			<key>alternateColors</key>
+			<true/>
+			<key>PostNotification</key>
+			<string>com.peterdev.notchcontrol/settingschanged</string>
+		</dict>
+	</array>
+	<key>title</key>
+	<string>NotchControl</string>
+</dict>
+</plist>
