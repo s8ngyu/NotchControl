@@ -23,10 +23,14 @@
 @interface SBHomeScreenViewController : UIViewController
 @end
 
+//Default
 BOOL isEnabled = true;
 BOOL isGrabber = false;
 BOOL isAutoCloser = false;
 int autoCloserTime = 3;
+//Clock
+BOOL usesTFTimes = false;
+BOOL showsSeconds = false;
 
 //Base
 UIView *gestureView;
@@ -84,6 +88,8 @@ void loadPrefs() {
 	isGrabber = [([file objectForKey:@"kGrabber"] ?: @(NO)) boolValue];
 	isAutoCloser = [([file objectForKey:@"kEnableAutoCloser"] ?: @(NO)) boolValue];
 	autoCloserTime = [([file objectForKey:@"kAutoCloseTime"] ?: @(3)) intValue];
+	usesTFTimes = [([file objectForKey:@"kClockTF"] ?: @(NO)) boolValue];
+	showsSeconds = [([file objectForKey:@"kClockSeconds"] ?: @(NO)) boolValue];
 
 	enabledModules = [[file objectForKey:@"kEnabledModules"] mutableCopy];
 	NSLog(@"NotchControl: %@", enabledModules);
@@ -114,7 +120,7 @@ void lockedPostNotification() {
 			[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateButton) name:(__bridge NSString*)kMRMediaRemoteNowPlayingApplicationIsPlayingDidChangeNotification object:nil];
 			[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateWeather) name:@"NotchControlWeatherUpdate" object:nil];
 			[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(swipedUpNotch:) name:@"NotchControlDeviceLocked" object:nil];
-			[NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(updateTime) userInfo:nil repeats:YES];
+			[NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(updateTime) userInfo:nil repeats:YES];
 
 			gestureView = [[UIView alloc] initWithFrame:CGRectMake(withoutNotch/2, -30, 209, 65)];
 			gestureView.backgroundColor = [UIColor clearColor];
@@ -365,11 +371,23 @@ void lockedPostNotification() {
 
 	%new
 	-(void)updateTime {
-		NSDate *curDate = [NSDate date];
-		NSDateFormatter *dateFormatter = [[NSDateFormatter alloc]init];
-		[dateFormatter setDateFormat:@"hh:mm:ss"];
-		NSString *dateString = [dateFormatter stringFromDate:curDate];
+		NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+		NSString *dateFormat = @"hh:mm";
 		
+			
+		if (usesTFTimes) {
+    		NSLocale *enUSPOSIXLocale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US_POSIX"];
+			[dateFormatter setLocale:enUSPOSIXLocale];
+			dateFormat = @"HH:mm";
+			[dateFormatter setTimeZone:[NSTimeZone localTimeZone]];
+		}
+
+		if (showsSeconds) {
+			dateFormat = [dateFormat stringByAppendingString:@":ss"];
+		}
+
+		[dateFormatter setDateFormat:dateFormat];
+		NSString *dateString = [dateFormatter stringFromDate:[NSDate date]];
 		clockLabel.text = dateString;
 	}
 

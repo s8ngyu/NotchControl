@@ -16,8 +16,7 @@
         self.hb_appearanceSettings = appearanceSettings;
 
         self.navigationItem.titleView = [UIView new];
-        self.titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(0,0,10,10)];
-        self.titleLabel.font = [UIFont boldSystemFontOfSize:17];
+        self.titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 10, 10)];
         self.titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
         NSMutableAttributedString *text = [[NSMutableAttributedString alloc] initWithString:@"NotchControl\nVersion 1.0.1"];
         [text addAttributes:@{NSFontAttributeName : [UIFont fontWithName:@".SFUIText-Medium" size:15],
@@ -27,7 +26,6 @@
             NSForegroundColorAttributeName:[[UIColor whiteColor] colorWithAlphaComponent:0.5]}
         range:NSMakeRange(13, 13)];
         [self.titleLabel setAttributedText:text];
-        self.titleLabel.textColor = [UIColor whiteColor];
         self.titleLabel.textAlignment = NSTextAlignmentCenter;
         self.titleLabel.alpha = 0.0f;
         self.titleLabel.lineBreakMode = NSLineBreakByWordWrapping;
