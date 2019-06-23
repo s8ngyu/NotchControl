@@ -9,7 +9,7 @@
     UITableView * _table;
 }
 @property (nonatomic, retain) UIView *headerView;
-@property (nonatomic, retain) UIImageView *headerImageView;
+@property (nonatomic, retain) UIView *headerCoverView;
 @property (nonatomic, retain) UILabel *bannerAuthorLabel;
 @property (nonatomic, retain) UILabel *bannerTitleLabel;
 @property (nonatomic, retain) UILabel *titleLabel;
