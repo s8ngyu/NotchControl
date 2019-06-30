@@ -297,7 +297,7 @@ void lockedPostNotification() {
 		notchView.frame = frame;
 		[UIView commitAnimations];
 		if (isAutoCloser) {
-			autoCloserTimer = [NSTimer scheduledTimerWithTimeInterval:3 target:self selector:@selector(swipedUpNotch:) userInfo:nil repeats:YES];
+			autoCloserTimer = [NSTimer scheduledTimerWithTimeInterval:autoCloserTime target:self selector:@selector(swipedUpNotch:) userInfo:nil repeats:YES];
 		}
 	}
 
@@ -412,7 +412,7 @@ void lockedPostNotification() {
 	-(void)resetAutoCloserTimer {
 		if (isAutoCloser) {
 			[autoCloserTimer invalidate];
-			autoCloserTimer = [NSTimer scheduledTimerWithTimeInterval:3 target:self selector:@selector(swipedUpNotch:) userInfo:nil repeats:YES];
+			autoCloserTimer = [NSTimer scheduledTimerWithTimeInterval:autoCloserTime target:self selector:@selector(swipedUpNotch:) userInfo:nil repeats:YES];
 		}
 	}
 	%end
@@ -421,7 +421,7 @@ void lockedPostNotification() {
 	- (void)viewWillLayoutSubviews {
 		%orig;
 		if ([[NSFileManager defaultManager] fileExistsAtPath:@"/var/mobile/Library/Preferences/com.peterdev.notchcontrol.plist"]) return;
-		UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"NotchControl" message:@"Thank you for downloading NotchControl, Please go Settings and change your modules setting." preferredStyle:UIAlertControllerStyleAlert];
+		UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"NotchControl" message:@"Thank you for downloading NotchControl, Please go Settings and add modules." preferredStyle:UIAlertControllerStyleAlert];
 
 		UIAlertAction *okAction = [UIAlertAction actionWithTitle:@"Okay" style:UIAlertActionStyleCancel handler:nil];
 
