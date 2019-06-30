@@ -1,5 +1,5 @@
 #import <Cephei/HBPreferences.h>
-#import <AudioToolbox/AudioToolbox.h>
+#import <UIKit/UIKit.h>
 #import "./headers/MarqueeLabel.h"
 #import "./headers/MediaRemote.h"
 #import "./headers/AWeatherModel.h"
@@ -7,7 +7,8 @@
 #import "./headers/UIImage+tintColor.h"
 #import "./headers/UIImage+ScaledImage.h"
 
-@interface UIWindow (NotchControl)
+@interface UIWindow (NotchControl) <UIScrollViewDelegate>
+@property (nonatomic, strong) UIImpactFeedbackGenerator *impactFeedbackGenerator;
 -(void)addNowPlayingModule:(int)page;
 -(void)addMusicControlModule:(int)page;
 -(void)addClockModule:(int)page;
@@ -17,19 +18,32 @@
 -(void)updateButton;
 -(void)updateTime;
 -(void)updateInfo;
+-(void)resetAutoCloserTimer;
 @end
 
 @interface SBHomeScreenViewController : UIViewController
 @end
 
-static bool isEnabled = true;
+//Default
+BOOL isEnabled = true;
+BOOL isGrabber = false;
+BOOL isAutoCloser = false;
+int autoCloserTime = 3;
+//Clock
+BOOL usesTFTimes = false;
+BOOL showsSeconds = false;
+//Music Controller
+BOOL isHaptic = true;
+int hapticStyle = 1;
 
 //Base
 UIView *gestureView;
 UIView *notchView;
+UIView *pillView;
 UIScrollView *scrollView;
 NSMutableArray *enabledModules;
 CGFloat withoutNotch;
+NSTimer *autoCloserTimer;
 
 //Music Preview View
 UIView *musicPreviewView;
@@ -75,13 +89,27 @@ void loadPrefs() {
 	HBPreferences *file = [[HBPreferences alloc] initWithIdentifier:@"com.peterdev.notchcontrol"];
 
 	isEnabled = [([file objectForKey:@"kEnabled"] ?: @(YES)) boolValue];
+	isGrabber = [([file objectForKey:@"kGrabber"] ?: @(NO)) boolValue];
+	isAutoCloser = [([file objectForKey:@"kEnableAutoCloser"] ?: @(NO)) boolValue];
+	autoCloserTime = [([file objectForKey:@"kAutoCloseTime"] ?: @(3)) intValue];
+	usesTFTimes = [([file objectForKey:@"kClockTF"] ?: @(NO)) boolValue];
+	showsSeconds = [([file objectForKey:@"kClockSeconds"] ?: @(NO)) boolValue];
+	isHaptic = [([file objectForKey:@"kEnableHaptic"] ?: @(YES)) boolValue];
+	hapticStyle = [([file objectForKey:@"kHapticStyle"] ?: @(1)) intValue];
 
 	enabledModules = [[file objectForKey:@"kEnabledModules"] mutableCopy];
 	NSLog(@"NotchControl: %@", enabledModules);
 }
 
+void lockedPostNotification() {
+	[[NSNotificationCenter defaultCenter]
+     postNotificationName:@"NotchControlDeviceLocked"
+     object:nil];
+}
+
 %group NC
 	%hook UIWindow
+	%property (nonatomic, strong) UIImpactFeedbackGenerator *impactFeedbackGenerator;
 	-(void)layoutSubviews {
 		%orig;
 		CGFloat width = [UIScreen mainScreen].bounds.size.width;
@@ -96,7 +124,16 @@ void loadPrefs() {
 			[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateInfo) name:(__bridge NSString*)kMRMediaRemoteNowPlayingInfoDidChangeNotification object:nil];
 			[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateButton) name:(__bridge NSString*)kMRMediaRemoteNowPlayingApplicationIsPlayingDidChangeNotification object:nil];
 			[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateWeather) name:@"NotchControlWeatherUpdate" object:nil];
-			[NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(updateTime) userInfo:nil repeats:YES];
+			[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(swipedUpNotch:) name:@"NotchControlDeviceLocked" object:nil];
+			[NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(updateTime) userInfo:nil repeats:YES];
+
+			if (isHaptic) {
+				self.impactFeedbackGenerator = [[UIImpactFeedbackGenerator alloc] initWithStyle:UIImpactFeedbackStyleMedium];
+				if (hapticStyle == 0) self.impactFeedbackGenerator = [[UIImpactFeedbackGenerator alloc] initWithStyle:UIImpactFeedbackStyleLight];
+				if (hapticStyle == 1) self.impactFeedbackGenerator = [[UIImpactFeedbackGenerator alloc] initWithStyle:UIImpactFeedbackStyleMedium];
+				if (hapticStyle == 2) self.impactFeedbackGenerator = [[UIImpactFeedbackGenerator alloc] initWithStyle:UIImpactFeedbackStyleHeavy];
+    			[self.impactFeedbackGenerator prepare];
+			}
 
 			gestureView = [[UIView alloc] initWithFrame:CGRectMake(withoutNotch/2, -30, 209, 65)];
 			gestureView.backgroundColor = [UIColor clearColor];
@@ -110,10 +147,23 @@ void loadPrefs() {
 			[gestureView addGestureRecognizer:downGestureRecognizer];
 
 			notchView = [[UIView alloc] initWithFrame:CGRectMake(withoutNotch/2, -120, 209, 120)];
+			if (isGrabber) {
+				notchView = [[UIView alloc] initWithFrame:CGRectMake(withoutNotch/2, -130, 209, 130)];
+			}
 			notchView.backgroundColor = [UIColor blackColor];
 			notchView.clipsToBounds = YES;
 			notchView.layer.cornerRadius = 23;
 			[self addSubview:notchView];
+
+			if (isGrabber) {
+				int pill = notchView.frame.size.width - 120;
+				pillView = [[UIView alloc] initWithFrame:CGRectMake(pill/2, 122.5, 120, 5)];
+				pillView.backgroundColor = [UIColor whiteColor];
+				pillView.userInteractionEnabled = NO;
+				pillView.clipsToBounds = YES;
+				pillView.layer.cornerRadius = pillView.frame.size.height/2;
+				[notchView addSubview:pillView];
+			}
 
 			UISwipeGestureRecognizer *upGestureRecognizer = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(swipedUpNotch:)];
 			upGestureRecognizer.direction = UISwipeGestureRecognizerDirectionUp;
@@ -122,6 +172,7 @@ void loadPrefs() {
 
 			scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0, 60, notchView.frame.size.width, 60)];
 			scrollView.backgroundColor = [UIColor blackColor];
+			scrollView.delegate = self;
 			scrollView.pagingEnabled = YES;
 			[notchView addSubview:scrollView];
 
@@ -260,6 +311,9 @@ void loadPrefs() {
 		frame.origin.y = -30;
 		notchView.frame = frame;
 		[UIView commitAnimations];
+		if (isAutoCloser) {
+			autoCloserTimer = [NSTimer scheduledTimerWithTimeInterval:autoCloserTime target:self selector:@selector(swipedUpNotch:) userInfo:nil repeats:YES];
+		}
 	}
 
 	%new
@@ -268,26 +322,36 @@ void loadPrefs() {
 		[UIView setAnimationDuration:0.5];
 		CGRect frame = notchView.frame;
 		frame.origin.y = -120;
+		if (isGrabber) {
+			frame.origin.y = -130;
+		}
 		notchView.frame = frame;
 		[UIView commitAnimations];
+		if (isAutoCloser) {
+			[autoCloserTimer invalidate];
+			autoCloserTimer = nil;
+		}
 	}
 
 	%new
 	-(void)musicBackTap:(UITapGestureRecognizer *)gesture {
 		MRMediaRemoteSendCommand(kMRPreviousTrack, nil);
-		AudioServicesPlaySystemSound(1519);
+		[self.impactFeedbackGenerator impactOccurred];
+		[self resetAutoCloserTimer];
 	}
 
 	%new
 	-(void)musicPlayTap:(UITapGestureRecognizer *)gesture {
 		MRMediaRemoteSendCommand(kMRTogglePlayPause, nil);
-		AudioServicesPlaySystemSound(1519);
+		[self.impactFeedbackGenerator impactOccurred];
+		[self resetAutoCloserTimer];
 	}
 
 	%new
 	-(void)musicNextTap:(UITapGestureRecognizer *)gesture {
 		MRMediaRemoteSendCommand(kMRNextTrack, nil);
-		AudioServicesPlaySystemSound(1519);
+		[self.impactFeedbackGenerator impactOccurred];
+		[self resetAutoCloserTimer];
 	}
 
 	%new
@@ -320,20 +384,51 @@ void loadPrefs() {
 
 	%new
 	-(void)updateTime {
-		NSDate *curDate = [NSDate date];
-		NSDateFormatter *dateFormatter = [[NSDateFormatter alloc]init];
-		[dateFormatter setDateFormat:@"hh:mm:ss"];
-		NSString *dateString = [dateFormatter stringFromDate:curDate];
+		NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+		NSString *dateFormat = @"hh:mm";
 		
+			
+		if (usesTFTimes) {
+    		NSLocale *enUSPOSIXLocale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US_POSIX"];
+			[dateFormatter setLocale:enUSPOSIXLocale];
+			dateFormat = @"HH:mm";
+			[dateFormatter setTimeZone:[NSTimeZone localTimeZone]];
+		}
+
+		if (showsSeconds) {
+			dateFormat = [dateFormat stringByAppendingString:@":ss"];
+		}
+
+		[dateFormatter setDateFormat:dateFormat];
+		NSString *dateString = [dateFormatter stringFromDate:[NSDate date]];
 		clockLabel.text = dateString;
 	}
 
 	%new
 	-(void)updateWeather {
+		if (!%c(WeatherPreferences)) return;  //Code from Nepeta/Exo
 		AWeatherModel *weatherModel = [%c(AWeatherModel) sharedInstance];
 		tempLabel.text = [weatherModel localeTemperature];
 
 		conditionView.image = [weatherModel glyphWithOption:ConditionOptionDefault];
+	}
+
+	%new
+	-(void)scrollViewDidScroll:(UIScrollView *)sender{
+		[self resetAutoCloserTimer];
+	}
+
+	%new
+	-(void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
+		[self resetAutoCloserTimer];
+	}
+
+	%new
+	-(void)resetAutoCloserTimer {
+		if (isAutoCloser) {
+			[autoCloserTimer invalidate];
+			autoCloserTimer = [NSTimer scheduledTimerWithTimeInterval:autoCloserTime target:self selector:@selector(swipedUpNotch:) userInfo:nil repeats:YES];
+		}
 	}
 	%end
 
@@ -341,7 +436,7 @@ void loadPrefs() {
 	- (void)viewWillLayoutSubviews {
 		%orig;
 		if ([[NSFileManager defaultManager] fileExistsAtPath:@"/var/mobile/Library/Preferences/com.peterdev.notchcontrol.plist"]) return;
-		UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"NotchControl" message:@"Thank you for downloading NotchControl, Please go Settings and change your modules setting." preferredStyle:UIAlertControllerStyleAlert];
+		UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"NotchControl" message:@"Thank you for downloading NotchControl, Please go Settings and add modules." preferredStyle:UIAlertControllerStyleAlert];
 
 		UIAlertAction *okAction = [UIAlertAction actionWithTitle:@"Okay" style:UIAlertActionStyleCancel handler:nil];
 
@@ -387,6 +482,7 @@ void loadPrefs() {
 %ctor {
 	loadPrefs();
 	CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), NULL, (CFNotificationCallback)loadPrefs, CFSTR("com.peterdev.notchcontrol/settingschanged"), NULL, CFNotificationSuspensionBehaviorCoalesce);
+	CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), NULL, (CFNotificationCallback)lockedPostNotification, CFSTR("com.apple.springboard.lockcomplete"), NULL, CFNotificationSuspensionBehaviorDeliverImmediately);
 
 	if (![[NSFileManager defaultManager] fileExistsAtPath:@"/var/lib/dpkg/info/com.peterdev.notchcontrol.list"]) {
 		%init(DRM);

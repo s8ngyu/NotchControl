@@ -5,7 +5,7 @@
 #import <Cephei/HBPreferences.h>
 #import <spawn.h>
 
-@interface NCRootListController : HBRootListController {
+@interface NCMCPrefsController : HBRootListController {
     UITableView * _table;
 }
 @property (nonatomic, retain) UIView *headerView;
@@ -14,6 +14,4 @@
 @property (nonatomic, retain) UILabel *bannerTitleLabel;
 @property (nonatomic, retain) UILabel *titleLabel;
 @property (nonatomic, retain) UIImageView *iconView;
-- (void)respring:(id)sender;
-- (void)resetPrefs:(id)sender;
 @end

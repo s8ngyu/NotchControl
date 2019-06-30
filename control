@@ -1,9 +1,9 @@
 Package: com.peterdev.notchcontrol
 Name: NotchControl
 Depends: mobilesubstrate, ws.hbang.common (>= 1.11), firmware (>= 11.0), cy+cpu.arm64
-Version: 1.0
+Version: 1.0.1
 Architecture: iphoneos-arm
-Description: Expand your Notch!
+Description: Control with your Notch!
 Maintainer: PeterDev <djperter@icloud.com>
 Author: PeterDev <djperter@icloud.com>
 Section: Tweaks
