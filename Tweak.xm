@@ -1,5 +1,5 @@
 #import <Cephei/HBPreferences.h>
-#import <AudioToolbox/AudioToolbox.h>
+#import <UIKit/UIKit.h>
 #import "./headers/MarqueeLabel.h"
 #import "./headers/MediaRemote.h"
 #import "./headers/AWeatherModel.h"
@@ -8,6 +8,7 @@
 #import "./headers/UIImage+ScaledImage.h"
 
 @interface UIWindow (NotchControl) <UIScrollViewDelegate>
+@property (nonatomic, strong) UIImpactFeedbackGenerator *impactFeedbackGenerator;
 -(void)addNowPlayingModule:(int)page;
 -(void)addMusicControlModule:(int)page;
 -(void)addClockModule:(int)page;
@@ -31,6 +32,9 @@ int autoCloserTime = 3;
 //Clock
 BOOL usesTFTimes = false;
 BOOL showsSeconds = false;
+//Music Controller
+BOOL isHaptic = true;
+int hapticStyle = 1;
 
 //Base
 UIView *gestureView;
@@ -90,6 +94,8 @@ void loadPrefs() {
 	autoCloserTime = [([file objectForKey:@"kAutoCloseTime"] ?: @(3)) intValue];
 	usesTFTimes = [([file objectForKey:@"kClockTF"] ?: @(NO)) boolValue];
 	showsSeconds = [([file objectForKey:@"kClockSeconds"] ?: @(NO)) boolValue];
+	isHaptic = [([file objectForKey:@"kEnableHaptic"] ?: @(YES)) boolValue];
+	hapticStyle = [([file objectForKey:@"kHapticStyle"] ?: @(1)) intValue];
 
 	enabledModules = [[file objectForKey:@"kEnabledModules"] mutableCopy];
 	NSLog(@"NotchControl: %@", enabledModules);
@@ -103,6 +109,7 @@ void lockedPostNotification() {
 
 %group NC
 	%hook UIWindow
+	%property (nonatomic, strong) UIImpactFeedbackGenerator *impactFeedbackGenerator;
 	-(void)layoutSubviews {
 		%orig;
 		CGFloat width = [UIScreen mainScreen].bounds.size.width;
@@ -119,6 +126,14 @@ void lockedPostNotification() {
 			[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateWeather) name:@"NotchControlWeatherUpdate" object:nil];
 			[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(swipedUpNotch:) name:@"NotchControlDeviceLocked" object:nil];
 			[NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(updateTime) userInfo:nil repeats:YES];
+
+			if (isHaptic) {
+				self.impactFeedbackGenerator = [[UIImpactFeedbackGenerator alloc] initWithStyle:UIImpactFeedbackStyleMedium];
+				if (hapticStyle == 0) self.impactFeedbackGenerator = [[UIImpactFeedbackGenerator alloc] initWithStyle:UIImpactFeedbackStyleLight];
+				if (hapticStyle == 1) self.impactFeedbackGenerator = [[UIImpactFeedbackGenerator alloc] initWithStyle:UIImpactFeedbackStyleMedium];
+				if (hapticStyle == 2) self.impactFeedbackGenerator = [[UIImpactFeedbackGenerator alloc] initWithStyle:UIImpactFeedbackStyleHeavy];
+    			[self.impactFeedbackGenerator prepare];
+			}
 
 			gestureView = [[UIView alloc] initWithFrame:CGRectMake(withoutNotch/2, -30, 209, 65)];
 			gestureView.backgroundColor = [UIColor clearColor];
@@ -321,21 +336,21 @@ void lockedPostNotification() {
 	%new
 	-(void)musicBackTap:(UITapGestureRecognizer *)gesture {
 		MRMediaRemoteSendCommand(kMRPreviousTrack, nil);
-		AudioServicesPlaySystemSound(1519);
+		[self.impactFeedbackGenerator impactOccurred];
 		[self resetAutoCloserTimer];
 	}
 
 	%new
 	-(void)musicPlayTap:(UITapGestureRecognizer *)gesture {
 		MRMediaRemoteSendCommand(kMRTogglePlayPause, nil);
-		AudioServicesPlaySystemSound(1519);
+		[self.impactFeedbackGenerator impactOccurred];
 		[self resetAutoCloserTimer];
 	}
 
 	%new
 	-(void)musicNextTap:(UITapGestureRecognizer *)gesture {
 		MRMediaRemoteSendCommand(kMRNextTrack, nil);
-		AudioServicesPlaySystemSound(1519);
+		[self.impactFeedbackGenerator impactOccurred];
 		[self resetAutoCloserTimer];
 	}
 

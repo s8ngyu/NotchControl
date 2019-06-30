@@ -120,6 +120,16 @@
 			<key>label</key>
 			<string>Clock</string>
 		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSLinkCell</string>
+			<key>detail</key>
+			<string>NCMCPrefsController</string>
+			<key>isController</key>
+			<true/>
+			<key>label</key>
+			<string>Music Controller</string>
+		</dict>
 
 		<!-- Credits -->
 		<dict>
